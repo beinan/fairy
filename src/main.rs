@@ -24,7 +24,7 @@ async fn main() {
     }
 }
 
-async fn echo(stream: TcpStream) -> std::io::Result<()> {
+async fn echo(mut stream: TcpStream) -> std::io::Result<()> {
     let mut buf: Vec<u8> = Vec::with_capacity(8 * 1024);
     let mut res;
     loop {
