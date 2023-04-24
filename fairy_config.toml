@@ -1,0 +1,3 @@
+debug=true
+http_port=8080
+socket_port=9090

@@ -6,6 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+config = "0.13.1"
+serde = { version = "1.0.140", features = ["derive"] }
+serde_derive = "1.0.140"
+
 lazy_static = "1.4"
 monoio = "0.1.2"
 monoio-compat = "0.1.0"
@@ -17,4 +21,3 @@ bytes = {version = "1"}
 hyper = {version = "0.14", features = ["http1", "client", "server", "stream"]}
 
 futures = "0.3"
-
