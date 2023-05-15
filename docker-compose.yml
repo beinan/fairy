@@ -4,8 +4,8 @@ services:
     build: .
     hostname: fairy-worker
     ports:
-      - '8080:8080'
-      - '19090:19090'
+      - '8080'
+      - '19090'
     environment:
       - FAIRY_CONFIG=/etc/fairy/fairy_config.toml
     volumes:
