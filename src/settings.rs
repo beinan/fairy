@@ -1,3 +1,5 @@
+use std::env;
+
 use lazy_static::lazy_static;
 
 
@@ -16,12 +18,15 @@ pub struct Settings {
     pub debug: bool,
     pub http_port: u16,
     pub socket_port: u16,
+    pub service_discovery_type: String,
+    pub static_service_list: Vec<String>,
 }
 
 impl Settings {
     pub fn new() -> Result<Self, ConfigError> {
+        let config_filename = env::var("FAIRY_CONFIG").unwrap_or_else(|_| "fairy_config".into());
         let s = Config::builder()
-            .add_source(File::with_name("fairy_config"))
+            .add_source(File::with_name(config_filename.as_str()))
             .build()?;
         s.try_deserialize()
     }

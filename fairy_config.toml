@@ -1,3 +1,5 @@
 debug=true
 http_port=8080
-socket_port=9090
+socket_port=19090
+service_discovery_type="static"
+static_service_list=["",""]

@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+  fairy-worker:
+    build: .
+    hostname: fairy-worker
+    ports:
+      - '8080:8080'
+      - '19090:19090'
+    environment:
+      - FAIRY_CONFIG=/etc/fairy/fairy_config.toml
+    volumes:
+      - ./fairy_config.toml:/etc/fairy/fairy_config.toml
+  prometheus:
+    image: prom/prometheus
+    hostname: prometheus
+    volumes:
+      - ./conf/prometheus:/etc/prometheus
+    depends_on:
+      - fairy-worker
+    ports:
+      - '9090:9090'
