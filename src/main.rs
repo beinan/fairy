@@ -22,30 +22,37 @@ use service_registry::etcd::ServiceRegistry;
 
 use std::error::Error;
 
+use log::{error, info};
+use std::time::SystemTime;
+
+use fern::colors::{Color, ColoredLevelConfig};
+
 #[monoio::main]
 async fn main() {
+    setup_logger().unwrap();
+
     register_custom_metrics();
     
     let rt = tokio::runtime::Runtime::new().unwrap();
     let _ = register(&rt).await;
 
     let hyper_service = async {
-        println!("Running http server on 0.0.0.0:{}", SETTINGS.http_port);
+        info!("Running http server on 0.0.0.0:{}", SETTINGS.http_port);
         let _ = serve_http(([0, 0, 0, 0], SETTINGS.http_port), hyper_handler).await;
     };
     
     let socket_service = async {
         let listener = TcpListener::bind(format!("127.0.0.1:{}", SETTINGS.socket_port)).unwrap();
-        println!("listening socket {}", SETTINGS.socket_port);
+        info!("listening socket {}", SETTINGS.socket_port);
         loop {
             let incoming = listener.accept().await;
             match incoming {
                 Ok((stream, addr)) => {
-                    println!("accepted a connection from {}", addr);
+                    error!("accepted a connection from {}", addr);
                     monoio::spawn(echo(stream));
                 }
                 Err(e) => {
-                    println!("accepted connection failed: {}", e);
+                    error!("accepted connection failed: {}", e);
                     return;
                 }
             }
@@ -81,4 +88,30 @@ async fn register(rt: &tokio::runtime::Runtime) -> Result<(), Box<dyn Error>>{
     
         Ok(())
     }) 
+}
+
+fn setup_logger() -> Result<(), fern::InitError> {
+    fern::Dispatch::new()
+        .format(|out, message, record| {
+            let colors_line = ColoredLevelConfig::new()
+                .info(Color::Green)
+                .warn(Color::Yellow)
+                .error(Color::Red);
+            out.finish(format_args!(
+                "{} [{} {} {}] {}",
+                format_args!(
+                    "\x1B[{}m",
+                    colors_line.get_color(&record.level()).to_fg_str()),
+                humantime::format_rfc3339_seconds(SystemTime::now()),
+                record.level(),
+                record.target(),
+                message
+            ))
+        })
+        .level(log::LevelFilter::Info)
+        .level_for("fairy", log::LevelFilter::Debug) 
+        .chain(std::io::stdout())
+        //.chain(fern::log_file("output.log")?)
+        .apply()?;
+    Ok(())
 }
