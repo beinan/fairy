@@ -1,10 +1,10 @@
 // service_registry.rs
 
 use etcd_client::{Client, GetOptions, PutOptions};
+use log::{debug, error, info};
 use std::error::Error;
 use std::sync::{Arc, RwLock};
 use tokio::time;
-use log::{error, debug, info};
 
 use crate::settings::SETTINGS;
 
@@ -29,7 +29,13 @@ impl ServiceRegistry {
         let shared_data_clone2 = Arc::clone(&self.shared_data);
         let mut client_clone = self.client.clone();
         tokio::spawn(async move {
-            let lease_id = match ServiceRegistry::register_service(&mut client_clone, &SETTINGS.hostname, SETTINGS.http_port).await {
+            let lease_id = match ServiceRegistry::register_service(
+                &mut client_clone,
+                &SETTINGS.hostname,
+                SETTINGS.http_port,
+            )
+            .await
+            {
                 Ok(lease_id) => {
                     info!("Service registered with lease id: {}", lease_id);
                     lease_id
@@ -41,7 +47,9 @@ impl ServiceRegistry {
             };
 
             loop {
-                if let Err(err) = ServiceRegistry::update_shared_data(&mut client_clone, &shared_data_clone).await {
+                if let Err(err) =
+                    ServiceRegistry::update_shared_data(&mut client_clone, &shared_data_clone).await
+                {
                     error!("Failed to retrieve services: {}", err);
                 }
                 if let Err(err) = ServiceRegistry::keep_alive(&mut client_clone, lease_id).await {
@@ -65,7 +73,10 @@ impl ServiceRegistry {
         Ok(())
     }
 
-    async fn update_shared_data(client: &mut Client, shared_data: &Arc<RwLock<Vec<String>>>) -> Result<(), Box<dyn Error>> {
+    async fn update_shared_data(
+        client: &mut Client,
+        shared_data: &Arc<RwLock<Vec<String>>>,
+    ) -> Result<(), Box<dyn Error>> {
         let prefix = "services/";
         let options = GetOptions::new().with_prefix();
 
@@ -88,20 +99,33 @@ impl ServiceRegistry {
         Ok(())
     }
 
-    async fn register_service(client: &mut Client, service_host: &String, service_port: u16) -> Result<i64, Box<dyn Error>> {
+    async fn register_service(
+        client: &mut Client,
+        service_host: &String,
+        service_port: u16,
+    ) -> Result<i64, Box<dyn Error>> {
         // Key and value for the service registration
         let key = format!("services/{}:{}", service_host, service_port);
         let value = "127.0.0.1:8080"; // Replace with actual service address
-        
+
         // Register the service in etcd
         let lease_id = client.lease_grant(40, None).await?.id();
-        client.put(key.as_bytes().to_vec(), value.as_bytes().to_vec(), Some(PutOptions::new().with_lease(lease_id))).await?;
-    
-        info!("Registered service with ID: {}:{}, lease ID: {}", service_host, service_port, lease_id);
+        client
+            .put(
+                key.as_bytes().to_vec(),
+                value.as_bytes().to_vec(),
+                Some(PutOptions::new().with_lease(lease_id)),
+            )
+            .await?;
+
+        info!(
+            "Registered service with ID: {}:{}, lease ID: {}",
+            service_host, service_port, lease_id
+        );
 
         Ok(lease_id)
     }
-    
+
     async fn keep_alive(client: &mut Client, lease_id: i64) -> Result<(), Box<dyn Error>> {
         let keep_alive_result = client.lease_keep_alive(lease_id).await;
         match keep_alive_result {
@@ -114,5 +138,5 @@ impl ServiceRegistry {
             }
         };
         Ok(())
-    }   
+    }
 }
