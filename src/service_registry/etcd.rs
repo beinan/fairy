@@ -4,6 +4,9 @@ use etcd_client::{Client, GetOptions, PutOptions};
 use std::error::Error;
 use std::sync::{Arc, RwLock};
 use tokio::time;
+
+use crate::settings::SETTINGS;
+
 pub struct ServiceRegistry {
     client: Client,
     shared_data: Arc<RwLock<Vec<String>>>,
@@ -25,7 +28,7 @@ impl ServiceRegistry {
         let shared_data_clone2 = Arc::clone(&self.shared_data);
         let mut client_clone = self.client.clone();
         tokio::spawn(async move {
-            let lease_id = match ServiceRegistry::register_service(&mut client_clone, rand::random()).await {
+            let lease_id = match ServiceRegistry::register_service(&mut client_clone, &SETTINGS.hostname, SETTINGS.http_port).await {
                 Ok(lease_id) => {
                     println!("Service registered with lease id: {}", lease_id);
                     lease_id
@@ -83,16 +86,16 @@ impl ServiceRegistry {
         Ok(())
     }
 
-    async fn register_service(client: &mut Client, service_id: u64) -> Result<i64, Box<dyn Error>> {
+    async fn register_service(client: &mut Client, service_host: &String, service_port: u16) -> Result<i64, Box<dyn Error>> {
         // Key and value for the service registration
-        let key = format!("services/{}", service_id);
+        let key = format!("services/{}:{}", service_host, service_port);
         let value = "127.0.0.1:8080"; // Replace with actual service address
         
         // Register the service in etcd
         let lease_id = client.lease_grant(40, None).await?.id();
         client.put(key.as_bytes().to_vec(), value.as_bytes().to_vec(), Some(PutOptions::new().with_lease(lease_id))).await?;
     
-        println!("Registered service with ID: {}, lease ID: {}", service_id, lease_id);
+        println!("Registered service with ID: {}:{}, lease ID: {}", service_host, service_port, lease_id);
 
         Ok(lease_id)
     }
