@@ -14,7 +14,7 @@ pub struct ServiceRegistry {
 }
 
 impl ServiceRegistry {
-    pub async fn new(etcd_endpoints: [&str; 1]) -> Result<Self, Box<dyn Error>> {
+    pub async fn new(etcd_endpoints: &Vec<String>) -> Result<Self, Box<dyn Error>> {
         let client = Client::connect(etcd_endpoints, None).await?;
         let shared_data = Arc::new(RwLock::new(Vec::new()));
 

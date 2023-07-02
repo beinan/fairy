@@ -83,7 +83,7 @@ async fn echo(mut stream: TcpStream) -> std::io::Result<()> {
 
 async fn register(rt: &tokio::runtime::Runtime) -> Result<(), Box<dyn Error>>{
     rt.block_on(async {
-        let registry = ServiceRegistry::new(["localhost:2379"]).await?;
+        let registry = ServiceRegistry::new(&SETTINGS.etcd_uris).await?;
         registry.run().await?;
     
         Ok(())
