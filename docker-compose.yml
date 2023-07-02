@@ -6,6 +6,8 @@ services:
     ports:
       - '8080'
       - '19090'
+    depends_on:
+      - etcd
     environment:
       - FAIRY_CONFIG=/etc/fairy/fairy_config.toml
     volumes:
@@ -15,8 +17,6 @@ services:
     hostname: prometheus
     volumes:
       - ./conf/prometheus:/etc/prometheus
-    depends_on:
-      - fairy-worker
     ports:
       - '9090:9090'
   etcd:

@@ -17,10 +17,18 @@ use metrics::{INCOMING_REQUESTS};
 
 use settings::SETTINGS;
 
+mod service_registry;
+use service_registry::etcd::ServiceRegistry;
+
+use std::error::Error;
+
 #[monoio::main]
 async fn main() {
     register_custom_metrics();
     
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    let _ = register(&rt).await;
+
     let hyper_service = async {
         println!("Running http server on 0.0.0.0:{}", SETTINGS.http_port);
         let _ = serve_http(([0, 0, 0, 0], SETTINGS.http_port), hyper_handler).await;
@@ -44,6 +52,7 @@ async fn main() {
         }
     };
     join!(hyper_service, socket_service);
+    let _ = register(&rt).await;
 }
 
 async fn echo(mut stream: TcpStream) -> std::io::Result<()> {
@@ -63,4 +72,13 @@ async fn echo(mut stream: TcpStream) -> std::io::Result<()> {
         // clear
         buf.clear();
     }
+}
+
+async fn register(rt: &tokio::runtime::Runtime) -> Result<(), Box<dyn Error>>{
+    rt.block_on(async {
+        let registry = ServiceRegistry::new(["localhost:2379"]).await?;
+        registry.run().await?;
+    
+        Ok(())
+    }) 
 }

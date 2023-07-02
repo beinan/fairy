@@ -1,7 +1,7 @@
 FROM ghcr.io/rust-lang/rust:nightly-alpine3.17 as builder
 
 RUN apk update \
-    && apk --no-cache --update add build-base 
+    && apk --no-cache --update add build-base protobuf-dev
 
 WORKDIR /usr/src/fairy
 COPY . .
