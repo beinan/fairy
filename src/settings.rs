@@ -9,6 +9,8 @@ use serde_derive::Deserialize;
 
 use std::convert::TryInto;
 
+use log::{error, info};
+
 lazy_static! {
     pub static ref SETTINGS: Settings = Settings::new().unwrap();
 }
@@ -20,6 +22,7 @@ lazy_static! {
 pub struct Settings {
     pub debug: bool,
     pub log_level: String,
+    pub hostname: String,
     pub http_port: u16,
     pub socket_port: u16,
     pub service_discovery_type: String,
@@ -30,6 +33,7 @@ impl From<Config> for Settings {
     fn from(config: Config) -> Self {
         let debug = config.get_bool("is_debug").unwrap_or(false);
         let log_level = config.get::<String>("log_level").unwrap_or(String::from("INFO"));
+        let hostname = config.get::<String>("fairy_hostname").unwrap_or(hostname::get().unwrap().into_string().unwrap());
         let http_port = config.get::<u16>("http_port").unwrap_or(8080);
         let socket_port = config.get::<u16>("socket_port").unwrap_or(19090);
         let service_discovery_type = 
@@ -40,14 +44,17 @@ impl From<Config> for Settings {
         } else {
             Vec::new()
         };
-        Settings {
+        let settings = Settings {
             debug,
             log_level,
+            hostname,
             http_port,
             socket_port,
             service_discovery_type,
             static_service_list
-        }
+        };
+        info!("Settings loaded {:?}", settings);
+        settings
     }
 }
 
