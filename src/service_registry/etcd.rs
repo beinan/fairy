@@ -4,6 +4,7 @@ use etcd_client::{Client, GetOptions, PutOptions};
 use std::error::Error;
 use std::sync::{Arc, RwLock};
 use tokio::time;
+use log::{error, debug, info};
 
 use crate::settings::SETTINGS;
 
@@ -30,20 +31,21 @@ impl ServiceRegistry {
         tokio::spawn(async move {
             let lease_id = match ServiceRegistry::register_service(&mut client_clone, &SETTINGS.hostname, SETTINGS.http_port).await {
                 Ok(lease_id) => {
-                    println!("Service registered with lease id: {}", lease_id);
+                    info!("Service registered with lease id: {}", lease_id);
                     lease_id
                 }
                 Err(err) => {
-                    panic!("Failed to register: {}", err);
+                    error!("Failed to register: {}", err);
+                    panic!("Failed to register")
                 }
             };
 
             loop {
                 if let Err(err) = ServiceRegistry::update_shared_data(&mut client_clone, &shared_data_clone).await {
-                    println!("Failed to retrieve services: {}", err);
+                    error!("Failed to retrieve services: {}", err);
                 }
                 if let Err(err) = ServiceRegistry::keep_alive(&mut client_clone, lease_id).await {
-                    println!("Failed to keep-alive: {}", err);
+                    error!("Failed to keep-alive: {}", err);
                     //todo: retry and panic?
                 }
                 time::sleep(time::Duration::from_secs(30)).await;
@@ -54,7 +56,7 @@ impl ServiceRegistry {
             loop {
                 time::sleep(time::Duration::from_secs(5)).await;
                 let data = shared_data_clone2.read().unwrap();
-                println!("Registered services: {:?}", *data);
+                info!("Registered services: {:?}", *data);
             }
         });
 
@@ -95,7 +97,7 @@ impl ServiceRegistry {
         let lease_id = client.lease_grant(40, None).await?.id();
         client.put(key.as_bytes().to_vec(), value.as_bytes().to_vec(), Some(PutOptions::new().with_lease(lease_id))).await?;
     
-        println!("Registered service with ID: {}:{}, lease ID: {}", service_host, service_port, lease_id);
+        info!("Registered service with ID: {}:{}, lease ID: {}", service_host, service_port, lease_id);
 
         Ok(lease_id)
     }
@@ -104,10 +106,10 @@ impl ServiceRegistry {
         let keep_alive_result = client.lease_keep_alive(lease_id).await;
         match keep_alive_result {
             Ok((keeper, _)) => {
-                println!("Lease {} is still alive", keeper.id());
+                debug!("Lease {} is still alive", keeper.id());
             }
             Err(err) => {
-                println!("Failed to keep lease alive: {}", err);
+                error!("Failed to keep lease alive: {}", err);
                 //todo: re-register the service with a different lease id?
             }
         };

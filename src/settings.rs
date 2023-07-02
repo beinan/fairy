@@ -9,7 +9,7 @@ use serde_derive::Deserialize;
 
 use std::convert::TryInto;
 
-use log::{error, info};
+use log::info;
 
 lazy_static! {
     pub static ref SETTINGS: Settings = Settings::new().unwrap();
