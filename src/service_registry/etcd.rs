@@ -31,7 +31,7 @@ impl ServiceRegistry {
         tokio::spawn(async move {
             let lease_id = match ServiceRegistry::register_service(
                 &mut client_clone,
-                &SETTINGS.hostname,
+                &SETTINGS.local_ip,
                 SETTINGS.http_port,
             )
             .await
@@ -106,8 +106,7 @@ impl ServiceRegistry {
     ) -> Result<i64, Box<dyn Error>> {
         // Key and value for the service registration
         let key = format!("services/{}:{}", service_host, service_port);
-        let value = "127.0.0.1:8080"; // Replace with actual service address
-
+        let value = format!("{}:{}", service_host, service_port); 
         // Register the service in etcd
         let lease_id = client.lease_grant(40, None).await?.id();
         client

@@ -10,6 +10,7 @@ use serde_derive::Deserialize;
 use std::convert::TryInto;
 
 use log::info;
+use local_ip_address::local_ip;
 
 lazy_static! {
     pub static ref SETTINGS: Settings = Settings::new().unwrap();
@@ -23,6 +24,7 @@ pub struct Settings {
     pub debug: bool,
     pub log_level: String,
     pub hostname: String,
+    pub local_ip: String,
     pub http_port: u16,
     pub socket_port: u16,
     pub service_discovery_type: String,
@@ -35,6 +37,7 @@ impl From<Config> for Settings {
         let debug = config.get_bool("is_debug").unwrap_or(false);
         let log_level = config.get::<String>("log_level").unwrap_or(String::from("INFO"));
         let hostname = config.get::<String>("fairy_hostname").unwrap_or(hostname::get().unwrap().into_string().unwrap());
+        let local_ip = config.get::<String>("local_ip").unwrap_or(local_ip().unwrap().to_string());
         let http_port = config.get::<u16>("http_port").unwrap_or(8080);
         let socket_port = config.get::<u16>("socket_port").unwrap_or(19090);
         let service_discovery_type = 
@@ -54,6 +57,7 @@ impl From<Config> for Settings {
             debug,
             log_level,
             hostname,
+            local_ip,
             http_port,
             socket_port,
             service_discovery_type,

@@ -10,6 +10,8 @@ services:
       - etcd
     environment:
       - FAIRY_CONFIG=/etc/fairy/fairy_config.toml
+      - SERVICE_DISCOVERY_TYPE=etcd
+      - ETCD_URIS=etcd:2379
     volumes:
       - ./fairy_config.toml:/etc/fairy/fairy_config.toml
   prometheus:
