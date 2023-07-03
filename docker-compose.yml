@@ -8,10 +8,13 @@ services:
       - '19090'
     depends_on:
       - etcd
+      - prom_pushgateway
+      - prometheus
     environment:
       - FAIRY_CONFIG=/etc/fairy/fairy_config.toml
       - SERVICE_DISCOVERY_TYPE=etcd
       - ETCD_URIS=etcd:2379
+      - METRICS_PUSH_URI=prom_pushgateway:9091
     volumes:
       - ./fairy_config.toml:/etc/fairy/fairy_config.toml
   prometheus:
@@ -21,6 +24,12 @@ services:
       - ./conf/prometheus:/etc/prometheus
     ports:
       - '9090:9090'
+  prom_pushgateway:
+    image: prom/pushgateway:v1.2.0
+    hostname: prom_pushgateway
+    restart: unless-stopped
+    ports:
+      - '9091:9091'
   etcd:
     image: 'bitnami/etcd:latest'
     hostname: etcd
@@ -30,3 +39,4 @@ services:
     ports:
       - 2379:2379
       - 2380:2380
+      

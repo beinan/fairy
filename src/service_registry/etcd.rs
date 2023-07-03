@@ -31,7 +31,7 @@ impl ServiceRegistry {
         tokio::spawn(async move {
             let lease_id = match ServiceRegistry::register_service(
                 &mut client_clone,
-                &SETTINGS.local_ip,
+                &SETTINGS.hostname,
                 SETTINGS.http_port,
             )
             .await

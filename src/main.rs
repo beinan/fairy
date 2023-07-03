@@ -12,7 +12,7 @@ pub mod metrics;
 pub mod settings;
 
 use hyper_service::{serve_http, hyper_handler};
-use metrics::register_custom_metrics;
+use metrics::{register_custom_metrics, push_metrics};
 use metrics::{INCOMING_REQUESTS};
 
 use settings::SETTINGS;
@@ -27,39 +27,54 @@ use std::time::SystemTime;
 
 use fern::colors::{Color, ColoredLevelConfig};
 
-#[monoio::main]
-async fn main() {
+use std::time::Duration;
+use tokio::time::sleep;
+
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logger().unwrap();
 
     register_custom_metrics();
     
-    let rt = tokio::runtime::Runtime::new().unwrap();
-    let _ = register(&rt).await;
 
-    let hyper_service = async {
-        info!("Running http server on 0.0.0.0:{}", SETTINGS.http_port);
-        let _ = serve_http(([0, 0, 0, 0], SETTINGS.http_port), hyper_handler).await;
-    };
-    
-    let socket_service = async {
-        let listener = TcpListener::bind(format!("127.0.0.1:{}", SETTINGS.socket_port)).unwrap();
-        info!("listening socket {}", SETTINGS.socket_port);
-        loop {
-            let incoming = listener.accept().await;
-            match incoming {
-                Ok((stream, addr)) => {
-                    error!("accepted a connection from {}", addr);
-                    monoio::spawn(echo(stream));
-                }
-                Err(e) => {
-                    error!("accepted connection failed: {}", e);
-                    return;
+    let _ = register().await;
+    let _ = push().await;
+
+    let mut rt = monoio::RuntimeBuilder::<monoio::FusionDriver>::new()
+        .with_entries(256)
+        .enable_timer()
+        .build()
+        .unwrap();
+    rt.block_on(async {
+        let hyper_service = async {
+            info!("Running http server on 0.0.0.0:{}", SETTINGS.http_port);
+            let _ = serve_http(([0, 0, 0, 0], SETTINGS.http_port), hyper_handler).await;
+        };
+        
+        let socket_service = async {
+            let listener = TcpListener::bind(format!("127.0.0.1:{}", SETTINGS.socket_port)).unwrap();
+            info!("listening socket {}", SETTINGS.socket_port);
+            loop {
+                let incoming = listener.accept().await;
+                match incoming {
+                    Ok((stream, addr)) => {
+                        error!("accepted a connection from {}", addr);
+                        monoio::spawn(echo(stream));
+                    }
+                    Err(e) => {
+                        error!("accepted connection failed: {}", e);
+                        return;
+                    }
                 }
             }
-        }
-    };
-    join!(hyper_service, socket_service);
-    let _ = register(&rt).await;
+        };
+    
+        join!(hyper_service, socket_service);
+    
+    });
+
+    Ok(())
 }
 
 async fn echo(mut stream: TcpStream) -> std::io::Result<()> {
@@ -81,13 +96,24 @@ async fn echo(mut stream: TcpStream) -> std::io::Result<()> {
     }
 }
 
-async fn register(rt: &tokio::runtime::Runtime) -> Result<(), Box<dyn Error>>{
-    rt.block_on(async {
-        let registry = ServiceRegistry::new(&SETTINGS.etcd_uris).await?;
-        registry.run().await?;
-    
-        Ok(())
-    }) 
+async fn register() -> Result<(), Box<dyn Error>>{
+    let registry = ServiceRegistry::new(&SETTINGS.etcd_uris).await?;
+    registry.run().await?;
+
+    Ok(())
+}
+async fn push() -> Result<(), Box<dyn Error>> {
+    tokio::spawn(async move {
+        loop{
+            tokio::task::spawn_blocking(move || { 
+                let _ = push_metrics();    
+            });
+            sleep(Duration::from_secs(30)).await; 
+        }
+    });
+
+    tokio::task::yield_now().await;
+    Ok(())
 }
 
 fn setup_logger() -> Result<(), fern::InitError> {
@@ -109,7 +135,7 @@ fn setup_logger() -> Result<(), fern::InitError> {
             ))
         })
         .level(log::LevelFilter::Info)
-        .level_for("fairy", log::LevelFilter::Debug) 
+        .level_for("fairy", log::LevelFilter::Trace) 
         .chain(std::io::stdout())
         .chain(fern::log_file("output.log")?)
         .apply()?;

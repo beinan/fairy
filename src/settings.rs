@@ -30,6 +30,7 @@ pub struct Settings {
     pub service_discovery_type: String,
     pub etcd_uris: Vec<String>,
     pub static_service_list: Vec<String>,
+    pub metrics_push_uri: Option<String>
 }
 
 impl From<Config> for Settings {
@@ -53,6 +54,7 @@ impl From<Config> for Settings {
         } else {
             Vec::new()
         };
+        let metrics_push_uri = config.get_string("metrics_push_uri").ok();
         let settings = Settings {
             debug,
             log_level,
@@ -62,7 +64,8 @@ impl From<Config> for Settings {
             socket_port,
             service_discovery_type,
             etcd_uris,
-            static_service_list
+            static_service_list,
+            metrics_push_uri
         };
         info!("Settings loaded {:?}", settings);
         settings

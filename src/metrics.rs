@@ -1,8 +1,16 @@
 use prometheus::{
-    HistogramOpts, HistogramVec, IntCounter, IntCounterVec, IntGauge, Opts, Registry,
+    Counter, Histogram, HistogramOpts, HistogramVec, IntCounter, IntCounterVec, IntGauge, Opts, Registry,
 };
+use prometheus::{labels, register_counter, register_histogram};
 
 use lazy_static::lazy_static;
+
+use std::error::Error;
+
+use log::{error, trace};
+
+use crate::settings::SETTINGS;
+
 
 
 lazy_static! {
@@ -25,6 +33,16 @@ lazy_static! {
         &["env"]
     )
     .expect("metric can be created");
+    static ref PUSH_COUNTER: Counter = register_counter!(
+        "push_counter",
+        "Total number of prometheus client pushed."
+    )
+    .unwrap();
+    static ref PUSH_REQ_HISTOGRAM: Histogram = register_histogram!(
+        "push_request_latency_seconds",
+        "The push request latencies in seconds."
+    )
+    .unwrap();
 }
 
 pub fn register_custom_metrics() {
@@ -45,6 +63,31 @@ pub fn register_custom_metrics() {
         .expect("collector can be registered");
 }
 
+pub fn push_metrics() -> Result<(), Box<dyn Error>>{
+    let push_uri = SETTINGS.metrics_push_uri.as_deref().unwrap();
+    trace!("Pushing metrics to gateway {}", push_uri);
+
+    PUSH_COUNTER.inc();
+    let metric_families = prometheus::gather();
+    let _timer = PUSH_REQ_HISTOGRAM.start_timer();
+    let push_result = prometheus::push_metrics(
+        "fairy_worker_push",
+        labels! {"fairy_worker".to_owned() => "worker".to_owned(),},
+        push_uri,
+        metric_families,
+        None,
+    );
+    match push_result {
+        Ok(_) => {
+            trace!("Pushing metrics to gateway {} succeed", push_uri);
+            Ok(())
+        },
+        Err(e) => {
+            error!("Push metrics failed: {}", e);
+            Ok(())
+        }
+    }
+}
 
 pub fn metrics_result() -> String{
     use prometheus::Encoder;

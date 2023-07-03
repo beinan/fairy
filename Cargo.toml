@@ -19,7 +19,7 @@ serde_derive = "1.0.140"
 lazy_static = "1.4"
 monoio = "0.1.2"
 monoio-compat = "0.1.0"
-prometheus = { version = "0.13.3", features = ["process"] }
+prometheus = { version = "0.13.3", features = ["process", "push"] }
 
 rand = "0.7"
 

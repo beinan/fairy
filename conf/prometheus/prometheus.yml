@@ -7,6 +7,11 @@ rule_files:
 # - "second.rules"
 
 scrape_configs:
-  - job_name: fairy_worker
+  # - job_name: fairy_worker
+  #   static_configs:
+  #     - targets: ['fairy-worker:8080']
+  - job_name: 'pushgateway'
+    scrape_interval: 10s
+    honor_labels: true
     static_configs:
-      - targets: ['fairy-worker:8080']
+      - targets: ['prom_pushgateway:9091']
