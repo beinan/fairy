@@ -15,3 +15,7 @@ scrape_configs:
     honor_labels: true
     static_configs:
       - targets: ['prom_pushgateway:9091']
+  - job_name: 'cadvisor'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['cadvisor:8080']

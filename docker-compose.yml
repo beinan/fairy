@@ -32,7 +32,7 @@ services:
       - '9091:9091'
   grafana:
     image: grafana/grafana:6.7.2
-    container_name: grafana
+    hostname: grafana
     volumes:
       - ./conf/grafana:/etc/grafana/provisioning
     environment:
@@ -42,6 +42,18 @@ services:
     restart: unless-stopped
     ports:
       - '3000:3000'
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    hostname: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      #- /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
+    restart: unless-stopped
+    ports:
+      - '28080:8080'
 
   etcd:
     image: 'bitnami/etcd:latest'
