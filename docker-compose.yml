@@ -30,6 +30,19 @@ services:
     restart: unless-stopped
     ports:
       - '9091:9091'
+  grafana:
+    image: grafana/grafana:6.7.2
+    container_name: grafana
+    volumes:
+      - ./conf/grafana:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+
   etcd:
     image: 'bitnami/etcd:latest'
     hostname: etcd
