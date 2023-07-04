@@ -12,8 +12,8 @@ pub mod metrics;
 pub mod settings;
 
 use hyper_service::{serve_http, hyper_handler};
-use metrics::{register_custom_metrics, push_metrics};
-use metrics::{INCOMING_REQUESTS};
+use metrics::push_metrics;
+use metrics::{INCOMING_REQUESTS, RESPONSE_TIME_COLLECTOR};
 
 use settings::SETTINGS;
 
@@ -34,9 +34,6 @@ use tokio::time::sleep;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logger().unwrap();
-
-    register_custom_metrics();
-    
 
     let _ = register().await;
     let _ = push().await;
@@ -81,6 +78,7 @@ async fn echo(mut stream: TcpStream) -> std::io::Result<()> {
     let mut buf: Vec<u8> = Vec::with_capacity(8 * 1024);
     let mut res;
     loop {
+        let _timer = RESPONSE_TIME_COLLECTOR.start_timer();
         // read
         (res, buf) = stream.read(buf).await;
         if res? == 0 {

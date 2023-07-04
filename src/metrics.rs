@@ -1,7 +1,7 @@
 use prometheus::{
-    Counter, Histogram, HistogramOpts, HistogramVec, IntCounter, IntCounterVec, IntGauge, Opts, Registry,
+    labels, register_counter, register_histogram, register_int_counter_vec, register_int_gauge,
 };
-use prometheus::{labels, register_counter, register_histogram};
+use prometheus::{Counter, Histogram, IntCounterVec, IntGauge, Opts, Registry};
 
 use lazy_static::lazy_static;
 
@@ -11,33 +11,21 @@ use log::{error, trace};
 
 use crate::settings::SETTINGS;
 
-
-
 lazy_static! {
     pub static ref REGISTRY: Registry = Registry::new();
-
-    pub static ref INCOMING_REQUESTS : IntCounter =
-        IntCounter::new("incoming_requests", "Incoming Requests").expect("metric can be created");
-
+    pub static ref INCOMING_REQUESTS: Counter =
+        register_counter!("incoming_requests", "Incoming Requests").unwrap();
     pub static ref CONNECTED_CLIENTS: IntGauge =
-        IntGauge::new("connected_clients", "Connected Clients").expect("metric can be created");
-
-    pub static ref RESPONSE_CODE_COLLECTOR: IntCounterVec = IntCounterVec::new(
+        register_int_gauge!("connected_clients", "Connected Clients").unwrap();
+    pub static ref RESPONSE_CODE_COLLECTOR: IntCounterVec = register_int_counter_vec!(
         Opts::new("response_code", "Response Codes"),
         &["env", "statuscode", "type"]
     )
-    .expect("metric can be created");
-
-    pub static ref RESPONSE_TIME_COLLECTOR: HistogramVec = HistogramVec::new(
-        HistogramOpts::new("response_time", "Response Times"),
-        &["env"]
-    )
-    .expect("metric can be created");
-    static ref PUSH_COUNTER: Counter = register_counter!(
-        "push_counter",
-        "Total number of prometheus client pushed."
-    )
     .unwrap();
+    pub static ref RESPONSE_TIME_COLLECTOR: Histogram =
+        register_histogram!("response_time", "Response Times").unwrap();
+    static ref PUSH_COUNTER: Counter =
+        register_counter!("push_counter", "Total number of prometheus client pushed.").unwrap();
     static ref PUSH_REQ_HISTOGRAM: Histogram = register_histogram!(
         "push_request_latency_seconds",
         "The push request latencies in seconds."
@@ -45,25 +33,7 @@ lazy_static! {
     .unwrap();
 }
 
-pub fn register_custom_metrics() {
-    REGISTRY
-        .register(Box::new(INCOMING_REQUESTS.clone()))
-        .expect("collector can be registered");
-
-    REGISTRY
-        .register(Box::new(CONNECTED_CLIENTS.clone()))
-        .expect("collector can be registered");
-
-    REGISTRY
-        .register(Box::new(RESPONSE_CODE_COLLECTOR.clone()))
-        .expect("collector can be registered");
-
-    REGISTRY
-        .register(Box::new(RESPONSE_TIME_COLLECTOR.clone()))
-        .expect("collector can be registered");
-}
-
-pub fn push_metrics() -> Result<(), Box<dyn Error>>{
+pub fn push_metrics() -> Result<(), Box<dyn Error>> {
     let push_uri = SETTINGS.metrics_push_uri.as_deref().unwrap();
     trace!("Pushing metrics to gateway {}", push_uri);
 
@@ -71,8 +41,8 @@ pub fn push_metrics() -> Result<(), Box<dyn Error>>{
     let metric_families = prometheus::gather();
     let _timer = PUSH_REQ_HISTOGRAM.start_timer();
     let push_result = prometheus::push_metrics(
-        "fairy_worker_push",
-        labels! {"fairy_worker".to_owned() => "worker".to_owned(),},
+        "fairy_worker",
+        labels! {"instance".to_owned() => format!("{}:{}", SETTINGS.local_ip, SETTINGS.http_port),},
         push_uri,
         metric_families,
         None,
@@ -81,7 +51,7 @@ pub fn push_metrics() -> Result<(), Box<dyn Error>>{
         Ok(_) => {
             trace!("Pushing metrics to gateway {} succeed", push_uri);
             Ok(())
-        },
+        }
         Err(e) => {
             error!("Push metrics failed: {}", e);
             Ok(())
@@ -89,7 +59,7 @@ pub fn push_metrics() -> Result<(), Box<dyn Error>>{
     }
 }
 
-pub fn metrics_result() -> String{
+pub fn metrics_result() -> String {
     use prometheus::Encoder;
     let encoder = prometheus::TextEncoder::new();
 
