@@ -3,10 +3,10 @@ use monoio_compat::StreamWrapper;
 
 pub async fn serve_h2(addr: String) {
     let listener = TcpListener::bind(addr).unwrap();
-    
     loop {
         if let Ok((socket, _peer_addr)) = listener.accept().await {
             monoio::spawn(async move {
+                println!("h2 received!");
                 if let Err(e) = serve(socket).await {
                     println!("  -> err={e:?}");
                 }

@@ -11,7 +11,6 @@ pub mod hyper_service;
 
 use fairy_common::settings;
 
-
 use fairy_common::metrics::{INCOMING_REQUESTS, RESPONSE_TIME_COLLECTOR};
 use hyper_service::{hyper_handler, serve_http};
 
@@ -44,7 +43,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let h2_service = async {
             info!("Running http2 server on 0.0.0.0:{}", SETTINGS.http2_port);
-            let _ = h2_service::serve_h2(format!("127.0.0.1:{}", SETTINGS.http2_port));
+            let _ = h2_service::serve_h2(format!("127.0.0.1:{}", SETTINGS.http2_port)).await;
         };
 
         let socket_service = async {
