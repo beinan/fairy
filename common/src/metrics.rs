@@ -11,6 +11,9 @@ use log::{error, trace};
 
 use crate::settings::SETTINGS;
 
+use std::time::Duration;
+use tokio::time::sleep;
+
 lazy_static! {
     pub static ref REGISTRY: Registry = Registry::new();
     pub static ref INCOMING_REQUESTS: Counter =
@@ -31,6 +34,20 @@ lazy_static! {
         "The push request latencies in seconds."
     )
     .unwrap();
+}
+
+pub async fn start_push() -> Result<(), Box<dyn Error>> {
+    tokio::spawn(async move {
+        loop {
+            tokio::task::spawn_blocking(move || {
+                let _ = push_metrics();
+            });
+            sleep(Duration::from_secs(30)).await;
+        }
+    });
+
+    tokio::task::yield_now().await;
+    Ok(())
 }
 
 pub fn push_metrics() -> Result<(), Box<dyn Error>> {

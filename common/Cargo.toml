@@ -13,6 +13,8 @@ log = { workspace = true }
 fern = { workspace = true }
 humantime = { workspace = true }
 
+tokio = { workspace = true }
+
 lazy_static = { workspace = true }
 
 config = "0.13.1"
