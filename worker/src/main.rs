@@ -10,7 +10,8 @@ use monoio::join;
 pub mod hyper_service;
 pub mod h2_service;
 pub mod metrics;
-pub mod settings;
+
+use fairy_common::settings;
 
 use hyper_service::{serve_http, hyper_handler};
 use metrics::push_metrics;
@@ -23,18 +24,14 @@ use service_registry::etcd::ServiceRegistry;
 
 use std::error::Error;
 
-use log::{error, info};
-use std::time::SystemTime;
-
-use fern::colors::{Color, ColoredLevelConfig};
-
 use std::time::Duration;
 use tokio::time::sleep;
 
+use log::{error, info};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    setup_logger().unwrap();
+    fairy_common::logging::setup_logger().unwrap();
 
     let _ = register().await;
     let _ = push().await;
@@ -120,28 +117,3 @@ async fn push() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn setup_logger() -> Result<(), fern::InitError> {
-    fern::Dispatch::new()
-        .format(|out, message, record| {
-            let colors_line = ColoredLevelConfig::new()
-                .info(Color::Green)
-                .warn(Color::Yellow)
-                .error(Color::Red);
-            out.finish(format_args!(
-                "{} [{} {} {}] {}",
-                format_args!(
-                    "\x1B[{}m",
-                    colors_line.get_color(&record.level()).to_fg_str()),
-                humantime::format_rfc3339_seconds(SystemTime::now()),
-                record.level(),
-                record.target(),
-                message
-            ))
-        })
-        .level(log::LevelFilter::Info)
-        .level_for("fairy", log::LevelFilter::Trace) 
-        .chain(std::io::stdout())
-        .chain(fern::log_file("output.log")?)
-        .apply()?;
-    Ok(())
-}

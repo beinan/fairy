@@ -294,29 +294,39 @@ dependencies = [
 ]
 
 [[package]]
-name = "fairy"
+name = "fairy-common"
+version = "0.1.0"
+dependencies = [
+ "config",
+ "fern",
+ "hostname",
+ "humantime",
+ "lazy_static",
+ "local-ip-address",
+ "log",
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
+name = "fairy-worker"
 version = "0.1.0"
 dependencies = [
  "bytes",
- "config",
  "etcd-client",
- "fern",
+ "fairy-common",
  "futures",
  "h2",
- "hostname",
  "http",
  "humantime",
  "hyper",
  "lazy_static",
- "local-ip-address",
  "log",
  "monoio",
  "monoio-compat",
  "prometheus",
  "protoc",
  "rand 0.7.3",
- "serde",
- "serde_derive",
  "tokio",
 ]
 

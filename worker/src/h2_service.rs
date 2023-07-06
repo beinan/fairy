@@ -37,7 +37,6 @@ async fn handle_request(
     mut respond: h2::server::SendResponse<bytes::Bytes>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("GOT request: {request:?}");
-
     let body = request.body_mut();
     while let Some(data) = body.data().await {
         let data = data?;

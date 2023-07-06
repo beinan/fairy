@@ -1,0 +1,31 @@
+[package]
+name = "fairy-worker"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fairy-common = { path = "../common" }
+
+log = { workspace = true }
+humantime = { workspace = true }
+
+lazy_static = { workspace = true }
+
+
+monoio = "0.1.2"
+monoio-compat = "0.1.0"
+prometheus = { version = "0.13.3", features = ["process", "push"] }
+
+rand = "0.7"
+
+bytes = {version = "1"}
+hyper = {version = "0.14", features = ["http1", "client", "server", "stream"]}
+
+h2 = {version = "0.3"}
+http = {version = "0.2"}
+
+futures = "0.3"
+
+etcd-client = "0.11"
+tokio = { version = "1.28.1", features = ["full"] }
+protoc = "2.28"
