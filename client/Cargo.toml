@@ -1,0 +1,16 @@
+[package]
+name = "fairy_client"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "fairy-client"
+path = "src/main.rs"
+
+[dependencies]
+
+monoio = { workspace = true }
+monoio-compat = { workspace = true }
+
+h2 = {version = "0.3"}
+http = {version = "0.2"}

@@ -2,6 +2,7 @@
 members = [
     "common",
     "worker",
+    "client",
 ]
 
 [workspace.dependencies]
@@ -12,5 +13,9 @@ humantime = "2.1.0"
 tokio = { version = "1.28.1", features = ["full"] }
 
 lazy_static = "1.4"
+
+
+monoio = "0.1.2"
+monoio-compat = "0.1.0"
 
 
