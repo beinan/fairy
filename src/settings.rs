@@ -26,6 +26,7 @@ pub struct Settings {
     pub hostname: String,
     pub local_ip: String,
     pub http_port: u16,
+    pub http2_port: u16,
     pub socket_port: u16,
     pub service_discovery_type: String,
     pub etcd_uris: Vec<String>,
@@ -40,6 +41,8 @@ impl From<Config> for Settings {
         let hostname = config.get::<String>("fairy_hostname").unwrap_or(hostname::get().unwrap().into_string().unwrap());
         let local_ip = config.get::<String>("local_ip").unwrap_or(local_ip().unwrap().to_string());
         let http_port = config.get::<u16>("http_port").unwrap_or(8080);
+        let http2_port = config.get::<u16>("http2_port").unwrap_or(5928);
+        
         let socket_port = config.get::<u16>("socket_port").unwrap_or(19090);
         let service_discovery_type = 
             config.get_string("service_discovery_type").unwrap_or(String::from("static"));
@@ -61,6 +64,7 @@ impl From<Config> for Settings {
             hostname,
             local_ip,
             http_port,
+            http2_port,
             socket_port,
             service_discovery_type,
             etcd_uris,

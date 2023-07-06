@@ -8,6 +8,7 @@ use monoio::join;
 
 
 pub mod hyper_service;
+pub mod h2_service;
 pub mod metrics;
 pub mod settings;
 
@@ -48,6 +49,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             info!("Running http server on 0.0.0.0:{}", SETTINGS.http_port);
             let _ = serve_http(([0, 0, 0, 0], SETTINGS.http_port), hyper_handler).await;
         };
+
+        let h2_service = async {
+            info!("Running http2 server on 0.0.0.0:{}", SETTINGS.http2_port);
+            let _ = h2_service::serve_h2 (format!("127.0.0.1:{}", SETTINGS.http2_port));
+        };
         
         let socket_service = async {
             let listener = TcpListener::bind(format!("127.0.0.1:{}", SETTINGS.socket_port)).unwrap();
@@ -67,7 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         };
     
-        join!(hyper_service, socket_service);
+        join!(hyper_service, socket_service, h2_service);
     
     });
 
