@@ -9,7 +9,7 @@ use std::error::Error;
 
 use log::{error, trace};
 
-use fairy_common::settings::SETTINGS;
+use crate::settings::SETTINGS;
 
 lazy_static! {
     pub static ref REGISTRY: Registry = Registry::new();

@@ -14,7 +14,6 @@ lazy_static = { workspace = true }
 
 monoio = "0.1.2"
 monoio-compat = "0.1.0"
-prometheus = { version = "0.13.3", features = ["process", "push"] }
 
 rand = "0.7"
 

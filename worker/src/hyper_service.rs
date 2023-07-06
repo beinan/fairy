@@ -38,7 +38,7 @@ where
 
 use hyper::{Body, Method, Request, Response, StatusCode};
 
-use crate::metrics::metrics_result;
+use fairy_common::metrics::metrics_result;
 
 pub(crate) async fn hyper_handler(req: Request<Body>) -> Result<Response<Body>, std::convert::Infallible> {
     match (req.method(), req.uri().path()) {

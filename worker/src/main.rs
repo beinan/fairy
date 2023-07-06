@@ -9,13 +9,12 @@ use monoio::join;
 
 pub mod hyper_service;
 pub mod h2_service;
-pub mod metrics;
 
 use fairy_common::settings;
 
 use hyper_service::{serve_http, hyper_handler};
-use metrics::push_metrics;
-use metrics::{INCOMING_REQUESTS, RESPONSE_TIME_COLLECTOR};
+use fairy_common::metrics::push_metrics;
+use fairy_common::metrics::{INCOMING_REQUESTS, RESPONSE_TIME_COLLECTOR};
 
 use settings::SETTINGS;
 
