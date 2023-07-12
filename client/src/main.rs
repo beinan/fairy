@@ -2,6 +2,8 @@
 //! Note: This is only meant for compatible usage.
 //! Example code is modified from https://github.com/hyperium/h2/blob/master/examples/client.rs.
 
+use bytes::Bytes;
+use h2::client::SendRequest;
 use monoio::net::TcpStream;
 use monoio_compat::StreamWrapper;
 
@@ -11,10 +13,23 @@ async fn main() {
     let tcp_wrapper = StreamWrapper::new(tcp);
     let (mut client, h2) = h2::client::handshake(tcp_wrapper).await.unwrap();
 
+    // Spawn a task to run the conn...
+    monoio::spawn(async move {
+        if let Err(e) = h2.await {
+            println!("GOT ERR={e:?}");
+        }
+    });
+
     println!("sending request");
 
+    let _ = put(&mut client).await;
+
+    let _ = get(&mut client).await;
+}
+
+async fn get(client: &mut SendRequest<Bytes>) {
     let request = http::Request::builder()
-        .uri("https://http2.akamai.com/")
+        .uri("/get/1111")
         .body(())
         .unwrap();
 
@@ -26,12 +41,6 @@ async fn main() {
     // send trailers
     stream.send_trailers(trailers).unwrap();
 
-    // Spawn a task to run the conn...
-    monoio::spawn(async move {
-        if let Err(e) = h2.await {
-            println!("GOT ERR={e:?}");
-        }
-    });
 
     let response = response.await.unwrap();
     println!("GOT RESPONSE: {response:?}");
@@ -46,4 +55,23 @@ async fn main() {
     if let Some(trailers) = body.trailers().await.unwrap() {
         println!("GOT TRAILERS: {trailers:?}");
     }
+}
+
+async fn put(client: &mut SendRequest<Bytes>) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let request = http::Request::builder()
+        .uri("/put/1111")
+        .body(())
+        .unwrap();
+
+    let mut trailers = http::HeaderMap::new();
+    trailers.insert("zomg", "hello".parse().unwrap());
+
+    let (response, mut stream) = client.send_request(request, false).unwrap();
+
+    stream.send_trailers(trailers).unwrap();
+
+    let response = response.await.unwrap();
+    println!("GOT RESPONSE: {response:?}");
+
+    Ok(())
 }

@@ -18,4 +18,9 @@ lazy_static = "1.4"
 monoio = "0.1.2"
 monoio-compat = "0.1.0"
 
+bytes = {version = "1"}
+
+h2 = {version = "0.3"}
+http = {version = "0.2"}
+
 

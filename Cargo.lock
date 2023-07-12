@@ -335,6 +335,7 @@ dependencies = [
 name = "fairy_client"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "h2",
  "http",
  "monoio",

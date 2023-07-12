@@ -17,13 +17,14 @@ monoio-compat = { workspace = true }
 
 tokio = { workspace = true }
 
+bytes = { workspace = true }
+
 rand = "0.7"
 
-bytes = {version = "1"}
 hyper = {version = "0.14", features = ["http1", "client", "server", "stream"]}
 
-h2 = {version = "0.3"}
-http = {version = "0.2"}
+h2 = { workspace = true }
+http = { workspace = true }
 
 futures = "0.3"
 
