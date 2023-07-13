@@ -12,6 +12,8 @@ use std::convert::TryInto;
 use log::info;
 use local_ip_address::local_ip;
 
+pub mod local_kv_options;
+
 lazy_static! {
     pub static ref SETTINGS: Settings = Settings::new().unwrap();
 }
@@ -92,4 +94,24 @@ impl Settings {
             }
         }
     }
+}
+
+pub trait FromConfig: Sized {
+    fn from(config: &Config) -> Self {
+        Self::from_with_prefix("", config)
+    }
+
+    fn from_with_prefix(prefix: &str, config: &Config) -> Self;
+}
+
+pub fn parse_with_prefix<T>(prefix: &str) -> T
+    where
+        T: FromConfig
+{
+    let config_filename = env::var("FAIRY_CONFIG").unwrap_or_else(|_| "fairy_config".into());
+    let config_builder = Config::builder()
+        .add_source(File::with_name(config_filename.as_str()))
+        .add_source(Environment::default())
+        .build().expect("Config should be loaded");
+    T::from_with_prefix(prefix, &config_builder)
 }

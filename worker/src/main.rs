@@ -22,6 +22,7 @@ use service_registry::etcd::ServiceRegistry;
 use std::error::Error;
 
 use log::{error, info};
+use fairy_common::settings::Settings;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -40,6 +41,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             info!("Running http server on 0.0.0.0:{}", SETTINGS.http_port);
             let _ = serve_http(([0, 0, 0, 0], SETTINGS.http_port), hyper_handler).await;
         };
+
+        let worker_kv_options: settings::local_kv_options::LocalFileKVStoreOptions = settings::parse_with_prefix("worker");
+
+        info!("local kv options {:?}", worker_kv_options);
 
         let h2_service = async {
             info!("Running http2 server on 0.0.0.0:{}", SETTINGS.http2_port);
