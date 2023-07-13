@@ -63,11 +63,11 @@ async fn put(client: &mut SendRequest<Bytes>) -> Result<(), Box<dyn std::error::
         .body(())
         .unwrap();
 
+    let (response, mut stream) = client.send_request(request, false).unwrap();
+    stream.send_data(bytes::Bytes::from_static(b"world\n"), false)?;
+
     let mut trailers = http::HeaderMap::new();
     trailers.insert("zomg", "hello".parse().unwrap());
-
-    let (response, mut stream) = client.send_request(request, false).unwrap();
-
     stream.send_trailers(trailers).unwrap();
 
     let response = response.await.unwrap();

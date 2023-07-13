@@ -1,3 +1,7 @@
+use bytes::Bytes;
+use h2::RecvStream;
+use h2::server::SendResponse;
+use http::Request;
 use monoio::net::{TcpListener, TcpStream};
 use monoio_compat::StreamWrapper;
 
@@ -40,26 +44,52 @@ async fn handle_request(
     respond: h2::server::SendResponse<bytes::Bytes>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("GOT request: {request:?}");
-    let rest_uri: Vec<&str> = request.uri().path().split('/').collect();
-    match rest_uri.as_slice() {
-        ["", "get", id] => get_object(id, respond).await,
-        ["", "put", id] => get_object(id, respond).await,
+    let uri_parse_result = parse_uri(&request);
+    match uri_parse_result {
+        ("get", id) => get_object(id, respond).await,
+        ("put", id) => put_object(id, request, respond).await,
         _ => {
-            println!("unsupported ops {:?}", rest_uri);
+            println!("unsupported ops {:?}", uri_parse_result);
             Ok(())
         }
     }
+}
 
-    // let body = request.body_mut();
-    // while let Some(data) = body.data().await {
-    //     let data = data?;
-    //     println!("<<<< recv {data:?}");
-    //     let _ = body.flow_control().release_capacity(data.len());
-    // }
+fn parse_uri(request: &http::Request<h2::RecvStream>) -> (&str, String){
+    let rest_uri: Vec<&str> = {
+        let uri = request.uri().path();
+        uri.split('/').collect::<Vec<&str>>()
+    };
+    match rest_uri.as_slice() {
+        ["", "get", id] => ("get", id.to_string()),
+        ["", "put", id] => ("put", id.to_string()),
+        _ => {
+            println!("unsupported ops {:?}", rest_uri);
+            ("none", String::from("n/a"))
+        }
+    }
+}
+
+
+async fn put_object(
+    id: String,
+    request: Request<RecvStream>,
+    mut respond: SendResponse<Bytes>,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    println!(">>>> receive {}", id);
+    let mut body = request.into_body();//request.body_mut();
+
+    while let Some(chunk) = body.data().await {
+        println!("GOT CHUNK = {:?}", chunk.unwrap());
+    }
+    let response = http::Response::new(());
+    let mut send = respond.send_response(response, false)?;
+    send.send_data(bytes::Bytes::from_static(b"world\n"), true)?;
+    Ok(())
 }
 
 async fn get_object(
-    id: &str,
+    id: String,
     mut respond: h2::server::SendResponse<bytes::Bytes>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let chunk_size = 128;
