@@ -29,7 +29,7 @@ impl FromConfig for LocalFileKVStoreOptions {
 }
 
 fn get_config<'a, T>(config: &Config, prefix: &str, key: &str, default: T) -> T
-where T: Deserialize<'a>
+    where T: Deserialize<'a>
 {
     config.get::<T>(format!("{}.{}", prefix, key).as_str()).unwrap_or(default)
 }

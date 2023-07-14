@@ -14,6 +14,7 @@ fern = { workspace = true }
 humantime = { workspace = true }
 
 tokio = { workspace = true }
+monoio = { workspace = true }
 
 lazy_static = { workspace = true }
 
