@@ -297,14 +297,18 @@ dependencies = [
 name = "fairy-common"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "config",
  "fern",
+ "h2",
  "hostname",
+ "http",
  "humantime",
  "lazy_static",
  "local-ip-address",
  "log",
  "monoio",
+ "monoio-compat",
  "prometheus",
  "serde",
  "serde_derive",

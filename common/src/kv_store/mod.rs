@@ -1,6 +1,6 @@
 use std::hash::{Hash, Hasher};
 
-mod local_kv_store;
+pub mod local_kv_store;
 
 // #[async_trait]
 // pub trait KVStore<K: Key, V: Value> {
@@ -23,7 +23,7 @@ pub trait Key : Send{
 
 impl Key for String {
     fn hashcode(&self) -> u64 {
-        self.hashcode()
+        String::hashcode(self)
     }
 
     fn filename(&self) -> String {

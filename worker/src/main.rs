@@ -1,7 +1,3 @@
-/// A echo example.
-///
-/// Run the example and `nc 127.0.0.1 50002` in another shell.
-/// All your input will be echoed out.
 use monoio::io::{AsyncReadRent, AsyncWriteRentExt};
 use monoio::join;
 use monoio::net::{TcpListener, TcpStream};

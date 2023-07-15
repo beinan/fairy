@@ -12,7 +12,7 @@ impl LocalFileKVStore {
         LocalFileKVStore { options }
     }
 
-    async fn put<K: Key>(&self, id: K, buf: Vec<u8>) -> Result<(), Box<dyn Error + Send + Sync>>
+    pub async fn put<K: Key>(&self, id: K, buf: Vec<u8>) -> Result<(), Box<dyn Error + Send + Sync>>
     {
         let path = self.data_path(id);
         let f = monoio::fs::File::create(path).await?;
@@ -22,7 +22,7 @@ impl LocalFileKVStore {
         Ok(())
     }
 
-    async fn get<K: Key>(&self, id: K, buf: Vec<u8>) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>>
+    pub async fn get<K: Key>(&self, id: K, buf: Vec<u8>) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>>
     {
         let path = self.data_path(id);
         let f = monoio::fs::File::open(path).await?;
