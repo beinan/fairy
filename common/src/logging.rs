@@ -20,8 +20,9 @@ pub fn setup_logger() -> Result<(), fern::InitError> {
                 message
             ))
         })
-        .level(log::LevelFilter::Info)
-        .level_for("fairy", log::LevelFilter::Trace) 
+        .level(log::LevelFilter::Debug)
+        .level_for("fairy", log::LevelFilter::Trace)
+        .level_for("fairy_common", log::LevelFilter::Trace)
         .chain(std::io::stdout())
         .chain(fern::log_file("output.log")?)
         .apply()?;

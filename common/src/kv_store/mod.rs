@@ -1,3 +1,4 @@
+use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
 pub mod local_kv_store;
@@ -17,13 +18,15 @@ pub mod local_kv_store;
 // }
 
 pub trait Key : Send{
-    fn hashcode(&self) -> u64;
+    fn short_hash(&self) -> u16;
     fn filename(&self) -> String;
 }
 
 impl Key for String {
-    fn hashcode(&self) -> u64 {
-        String::hashcode(self)
+    fn short_hash(&self) -> u16 {
+        let mut s = DefaultHasher::new();
+        self.hash(&mut s);
+        s.finish() as u16
     }
 
     fn filename(&self) -> String {

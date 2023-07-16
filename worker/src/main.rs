@@ -13,12 +13,20 @@ use hyper_service::{hyper_handler, serve_http};
 use settings::SETTINGS;
 
 mod service_registry;
+
 use service_registry::etcd::ServiceRegistry;
 
 use std::error::Error;
+use lazy_static::lazy_static;
 
 use log::{error, info};
-use fairy_common::settings::Settings;
+
+use fairy_common::kv_store::local_kv_store::local_file_kv_store::LocalFileKVStore;
+
+lazy_static! {
+    static ref kv_store: LocalFileKVStore = LocalFileKVStore::new(settings::parse_with_prefix("worker"));
+    static ref h2_addr: String = format!("127.0.0.1:{}", SETTINGS.http2_port);
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -38,14 +46,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let _ = serve_http(([0, 0, 0, 0], SETTINGS.http_port), hyper_handler).await;
         };
 
-        let worker_kv_options: settings::local_kv_options::LocalFileKVStoreOptions = settings::parse_with_prefix("worker");
 
-        info!("local kv options {:?}", worker_kv_options);
-
-        let h2_service = async {
-            info!("Running http2 server on 0.0.0.0:{}", SETTINGS.http2_port);
-            let _ = h2_service::serve_h2(format!("127.0.0.1:{}", SETTINGS.http2_port)).await;
-        };
+        let h2_service = fairy_common::h2::h2_service::H2Service::new(&kv_store, h2_addr.as_str());
+        let h2_service = h2_service.serve_h2();
 
         let socket_service = async {
             let listener =

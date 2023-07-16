@@ -7,7 +7,7 @@ use lazy_static::lazy_static;
 
 use std::error::Error;
 
-use log::{error, trace};
+use log::{error, info, trace};
 
 use crate::settings::SETTINGS;
 
@@ -37,6 +37,10 @@ lazy_static! {
 }
 
 pub async fn start_push() -> Result<(), Box<dyn Error>> {
+    if SETTINGS.metrics_push_uri.is_none() {
+        info!("No prometheus push uri specified");
+        return Ok(())
+    }
     tokio::spawn(async move {
         loop {
             tokio::task::spawn_blocking(move || {

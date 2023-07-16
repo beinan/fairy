@@ -20,8 +20,7 @@ async fn main() {
         }
     });
 
-    println!("sending request");
-
+    let mut client = client.ready().await.unwrap();
     let _ = put(&mut client).await;
 
     let _ = get(&mut client).await;
@@ -43,7 +42,7 @@ async fn get(client: &mut SendRequest<Bytes>) {
 
 
     let response = response.await.unwrap();
-    println!("GOT RESPONSE: {response:?}");
+    println!("GOT GET RESPONSE: {response:?}");
 
     // Get the body
     let mut body = response.into_body();
@@ -58,20 +57,24 @@ async fn get(client: &mut SendRequest<Bytes>) {
 }
 
 async fn put(client: &mut SendRequest<Bytes>) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    //let mut client = client.ready().await.unwrap();
     let request = http::Request::builder()
         .uri("/put/1111")
         .body(())
         .unwrap();
 
     let (response, mut stream) = client.send_request(request, false).unwrap();
+
+
     stream.send_data(bytes::Bytes::from_static(b"world\n"), false)?;
 
     let mut trailers = http::HeaderMap::new();
     trailers.insert("zomg", "hello".parse().unwrap());
     stream.send_trailers(trailers).unwrap();
 
+
     let response = response.await.unwrap();
-    println!("GOT RESPONSE: {response:?}");
+    println!("GOT PUT RESPONSE: {response:?}");
 
     Ok(())
 }
