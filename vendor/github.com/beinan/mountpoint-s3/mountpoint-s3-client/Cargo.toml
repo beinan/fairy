@@ -1,0 +1,61 @@
+[package]
+name = "mountpoint-s3-client"
+# Steps to publish a new release:
+# - First publish a new release of `mountpoint-s3-crt` if needed
+# - Pull request to bump version number and update CHANGELOG.md
+#   - Make sure to also bump the `mountpoint-s3-crt` dependency if needed
+# - Create a new Git tag `mountpoint-s3-client-0.x.y`
+# - Run `cargo publish`
+version = "0.3.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/awslabs/mountpoint-s3"
+description = "High-performance Amazon S3 client for Mountpoint for Amazon S3."
+
+[dependencies]
+mountpoint-s3-crt = { path = "../mountpoint-s3-crt", version = "0.2.2" }
+
+async-trait = "0.1.57"
+auto_impl = "1.0.1"
+base64ct = { version = "1.6.0", features = ["std"] }
+const_format = "0.2.30"
+futures = { version = "0.3.24", features = ["thread-pool"] }
+lazy_static = "1.4.0"
+libc = "0.2.126"
+libc-stdhandle = "0.1.0"
+md-5 = "0.10.5"
+metrics = "0.20.1"
+percent-encoding = "2.2.0"
+pin-project = "1.0.12"
+regex = "1.7.1"
+static_assertions = "1.1.0"
+thiserror = "1.0.34"
+time = { version = "0.3.17", features = ["formatting", "parsing"] }
+tracing = { version = "0.1.35", default-features = false, features = ["std", "log"] }
+xmltree = "0.10.3"
+
+[dev-dependencies]
+anyhow = { version = "1.0.64", features = ["backtrace"] }
+aws-config = "0.54.1"
+aws-credential-types = "0.54.1"
+aws-sdk-s3 = "0.24.0"
+bytes = "1.2.1"
+clap = "3.2.12"
+ctor = "0.1.23"
+proptest = "1.0.0"
+rand = "0.8.5"
+rand_chacha = "0.3.1"
+rusty-fork = "0.3.0"
+tempfile = "3.5.0"
+test-case = "2.2.2"
+tokio = { version = "1.24.2", features = ["rt", "macros"] }
+tracing-subscriber = { version = "0.3.14", features = ["fmt", "env-filter"] }
+
+[build-dependencies]
+built = { version = "0.6.0", features = ["git2"] }
+
+[lib]
+doctest = false
+
+[features]
+s3_tests = []
