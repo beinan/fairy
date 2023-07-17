@@ -18,6 +18,13 @@ Fairy is a distributed cache implemented in Rust. It uses consistent hashing and
 - Rust nightly toolchain
 - Cargo
 
+#### Build in MacOS
+You might need
+```ssh
+brew install pkg-config
+brew install macfuse
+```
+
 ### Installation
 
 Add the following to your `Cargo.toml` file:

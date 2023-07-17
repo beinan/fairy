@@ -5,10 +5,10 @@ RUN apk update \
 
 WORKDIR /usr/src/fairy
 COPY . .
-RUN cargo install --path .
+RUN cargo install --path worker
 
 FROM debian:buster-slim
 RUN apt-get update & apt-get install -y extra-runtime-dependencies & rm -rf /var/lib/apt/lists/*
-COPY --from=builder /usr/local/cargo/bin/fairy /usr/local/bin/fairy
+COPY --from=builder /usr/local/cargo/bin/fairy-worker /usr/local/bin/fairy-worker
 
-CMD ["fairy"]
+CMD ["fairy-worker"]
