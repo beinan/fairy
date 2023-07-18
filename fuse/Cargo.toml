@@ -9,3 +9,4 @@ crate-type = ["lib"]
 path = "src/fuse_lib.rs"
 
 [dependencies]
+fuser = "0.12.0"

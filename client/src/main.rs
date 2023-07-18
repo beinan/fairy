@@ -10,7 +10,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // let s3_client = ufs::create_s3_client().await;
     //
     // ufs::list_objects(&s3_client, "beinan-test").await;
-
+    fairy_fuse::mount();
     let mut rt = monoio::RuntimeBuilder::<monoio::FusionDriver>::new()
         .with_entries(256)
         .enable_timer()

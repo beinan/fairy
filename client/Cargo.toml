@@ -8,6 +8,8 @@ name = "fairy-client"
 path = "src/main.rs"
 
 [dependencies]
+fairy-fuse = { path = "../fuse" }
+
 monoio = { workspace = true }
 monoio-compat = { workspace = true }
 tokio = { workspace = true }
