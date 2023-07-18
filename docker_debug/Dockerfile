@@ -6,6 +6,8 @@ RUN apk update \
 WORKDIR /usr/src/fairy
 
 #ADD . .
-#ENV RUSTFLAGS="-C target-feature=-crt-static"
+ENV RUSTFLAGS="-C target-feature=-crt-static"
+ENV CARGO_HOME=/usr/src/fairy/dockerout/cargo
+ENV CARGO_TARGET_DIR=/usr/src/fairy/dockerout/target
 
 #RUN cargo install --path /usr/src/fairy/worker

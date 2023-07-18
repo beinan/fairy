@@ -1,4 +1,5 @@
 /target
+/dockerout
 output.log
 .idea/
 .DS_Store

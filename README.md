@@ -36,6 +36,11 @@ Start a debug container
 docker run -it --rm -v ${PWD}:/usr/src/fairy fairy-debug
 ```
 
+You might need more permissions if you want to try POSIX/fuse interface
+```ssh
+docker run -it --rm --cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined -v ${PWD}:/usr/src/fairy fairy-debug
+```
+
 ### Installation
 
 Add the following to your `Cargo.toml` file:
