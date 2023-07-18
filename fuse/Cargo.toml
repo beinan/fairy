@@ -9,4 +9,3 @@ crate-type = ["lib"]
 path = "src/fuse_lib.rs"
 
 [dependencies]
-mountpoint-s3 = { git = "https://github.com/beinan/mountpoint-s3.git", branch = "main" }

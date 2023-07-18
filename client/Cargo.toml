@@ -8,12 +8,15 @@ name = "fairy-client"
 path = "src/main.rs"
 
 [dependencies]
-
 monoio = { workspace = true }
 monoio-compat = { workspace = true }
+tokio = { workspace = true }
 
 bytes = { workspace = true }
 
 h2 = { workspace = true }
 http = { workspace = true }
+
+aws-config = { version = "0.55.3" }
+aws-sdk-s3 = { version = "0.28.0"}
 

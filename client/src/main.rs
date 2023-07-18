@@ -1,29 +1,39 @@
-//! Example for using h2 directly.
-//! Note: This is only meant for compatible usage.
-//! Example code is modified from https://github.com/hyperium/h2/blob/master/examples/client.rs.
+mod ufs;
 
 use bytes::Bytes;
 use h2::client::SendRequest;
 use monoio::net::TcpStream;
 use monoio_compat::StreamWrapper;
 
-#[monoio::main]
-async fn main() {
-    let tcp = TcpStream::connect("127.0.0.1:5928").await.unwrap();
-    let tcp_wrapper = StreamWrapper::new(tcp);
-    let (mut client, h2) = h2::client::handshake(tcp_wrapper).await.unwrap();
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // let s3_client = ufs::create_s3_client().await;
+    //
+    // ufs::list_objects(&s3_client, "beinan-test").await;
 
-    // Spawn a task to run the conn...
-    monoio::spawn(async move {
-        if let Err(e) = h2.await {
-            println!("GOT ERR={e:?}");
-        }
+    let mut rt = monoio::RuntimeBuilder::<monoio::FusionDriver>::new()
+        .with_entries(256)
+        .enable_timer()
+        .build()
+        .unwrap();
+    rt.block_on(async {
+        let tcp = TcpStream::connect("127.0.0.1:5928").await.unwrap();
+        let tcp_wrapper = StreamWrapper::new(tcp);
+        let (mut client, h2) = h2::client::handshake(tcp_wrapper).await.unwrap();
+
+        // Spawn a task to run the conn...
+        monoio::spawn(async move {
+            if let Err(e) = h2.await {
+                println!("GOT ERR={e:?}");
+            }
+        });
+
+        let mut client = client.ready().await.unwrap();
+        let _ = put(&mut client).await;
+
+        let _ = get(&mut client).await;
     });
-
-    let mut client = client.ready().await.unwrap();
-    let _ = put(&mut client).await;
-
-    let _ = get(&mut client).await;
+    Ok(())
 }
 
 async fn get(client: &mut SendRequest<Bytes>) {
