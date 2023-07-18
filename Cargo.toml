@@ -3,7 +3,9 @@ members = [
     "common",
     "worker",
     "client",
+    "fuse",
 ]
+
 resolver = "2"
 
 [workspace.dependencies]
@@ -16,8 +18,8 @@ tokio = { version = "1.28.1", features = ["full"] }
 lazy_static = "1.4"
 
 
-monoio = "0.1.2"
-monoio-compat = "0.1.0"
+monoio = "0.1.6"
+monoio-compat = "0.1.1"
 
 bytes = {version = "1"}
 

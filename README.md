@@ -25,6 +25,17 @@ brew install pkg-config
 brew install macfuse
 ```
 
+#### Build and debug with docker
+Build the debug container
+```ssh
+docker build -t fairy-debug -f docker_debug/Dockerfile .
+```
+
+Start a debug container
+```ssh
+docker run -it --rm -v ${PWD}:/usr/src/fairy fairy-debug
+```
+
 ### Installation
 
 Add the following to your `Cargo.toml` file:
