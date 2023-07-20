@@ -1,16 +1,51 @@
 mod ufs;
 
+use std::path::PathBuf;
 use bytes::Bytes;
 use h2::client::SendRequest;
 use monoio::net::TcpStream;
 use monoio_compat::StreamWrapper;
 
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// Turn trace information on
+    #[arg(short, long, action = clap::ArgAction::Count)]
+    debug: u8,
+
+    #[command(subcommand)]
+    command: Option<Commands>,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    Mount {
+        mountpoint: PathBuf,
+    },
+    MountPassthrough {
+        mountpoint: PathBuf,
+        source: PathBuf,
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let cli = Cli::parse();
+    match &cli.command {
+        Some(Commands::Mount { mountpoint }) => {
+            fairy_fuse::mount(mountpoint);
+        }
+        Some(Commands::MountPassthrough { mountpoint, source }) => {
+            fairy_fuse::mount_passthrough(mountpoint, source);
+        }
+        None => {}
+    }
     // let s3_client = ufs::create_s3_client().await;
     //
     // ufs::list_objects(&s3_client, "beinan-test").await;
-    fairy_fuse::mount();
+    // fairy_fuse::mount();
     let mut rt = monoio::RuntimeBuilder::<monoio::FusionDriver>::new()
         .with_entries(256)
         .enable_timer()

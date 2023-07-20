@@ -1,7 +1,7 @@
 FROM ghcr.io/rust-lang/rust:nightly-alpine3.17 as builder
 
 RUN apk update \
-    && apk --no-cache --update add build-base protobuf-dev libressl-dev fuse fuse-dev pkgconfig
+    && apk --no-cache --update add build-base protobuf-dev libressl-dev fuse fuse-dev pkgconfig fio
 
 WORKDIR /usr/src/fairy
 

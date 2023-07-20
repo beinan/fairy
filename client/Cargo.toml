@@ -19,6 +19,8 @@ bytes = { workspace = true }
 h2 = { workspace = true }
 http = { workspace = true }
 
+clap = { version = "4.3.11", features = ["derive"]}
+
 aws-config = { version = "0.55.3" }
 aws-sdk-s3 = { version = "0.28.0"}
 
