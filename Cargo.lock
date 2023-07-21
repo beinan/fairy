@@ -943,7 +943,7 @@ dependencies = [
  "libc",
  "log",
  "memchr",
- "page_size",
+ "page_size 0.4.2",
  "pkg-config",
  "smallvec",
  "users",
@@ -953,16 +953,14 @@ dependencies = [
 [[package]]
 name = "fuser"
 version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5910691a0ececcc6eba8bb14029025c2d123e96a53db1533f6a4602861a5aaf7"
+source = "git+https://github.com/beinan/fuser.git?branch=master#a9ddc8a7a8cd9f2ba6e7c3bc4c6a76ecad66e6b2"
 dependencies = [
  "libc",
  "log",
  "memchr",
- "page_size",
+ "page_size 0.5.0",
  "pkg-config",
  "smallvec",
- "users",
  "zerocopy",
 ]
 
@@ -1722,6 +1720,16 @@ name = "page_size"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eebde548fbbf1ea81a99b128872779c437752fb99f217c45245e1a61dcd9edcd"
+dependencies = [
+ "libc",
+ "winapi",
+]
+
+[[package]]
+name = "page_size"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b7663cbd190cfd818d08efa8497f6cd383076688c49a391ef7c0d03cd12b561"
 dependencies = [
  "libc",
  "winapi",
