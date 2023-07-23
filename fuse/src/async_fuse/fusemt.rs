@@ -9,7 +9,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use fuser::TimeOrNow;
+use crate::fuser;
+use crate::fuser::TimeOrNow;
 use threadpool::ThreadPool;
 
 use crate::async_fuse::directory_cache::*;
@@ -17,6 +18,8 @@ use crate::async_fuse::inode_table::*;
 use crate::async_fuse::types::*;
 
 use log::{error, warn, info, debug};
+use monoio::{FusionRuntime, LegacyDriver, Runtime};
+use monoio::time::TimeDriver;
 
 trait IntoRequestInfo {
     fn info(&self) -> RequestInfo;
