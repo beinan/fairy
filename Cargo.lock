@@ -859,6 +859,7 @@ dependencies = [
  "aws-sdk-s3",
  "bytes",
  "clap",
+ "fairy-common",
  "fairy-fuse",
  "h2",
  "http",

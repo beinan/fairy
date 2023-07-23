@@ -32,6 +32,7 @@ enum Commands {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    fairy_common::logging::setup_logger().unwrap();
     let cli = Cli::parse();
     match &cli.command {
         Some(Commands::Mount { mountpoint }) => {
