@@ -17,9 +17,10 @@ use std::time::{Duration, SystemTime};
 use crate::passthrough::libc_extras::libc;
 use crate::passthrough::libc_wrappers;
 
-use fuse_mt::*;
+use crate::async_fuse::*;
 
 use log::{error, warn, info, debug};
+use crate::async_fuse::types::*;
 
 pub struct PassthroughFS {
     pub target: OsString,

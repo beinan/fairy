@@ -824,10 +824,10 @@ dependencies = [
 name = "fairy-fuse"
 version = "0.1.0"
 dependencies = [
- "fuse_mt",
- "fuser 0.12.0",
+ "fuser",
  "libc",
  "log",
+ "threadpool",
 ]
 
 [[package]]
@@ -923,34 +923,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fuse_mt"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6fb32ee97853a470831e058c0340955c9c773c8a1885aab99b37a2d3131fc06"
-dependencies = [
- "fuser 0.11.1",
- "libc",
- "log",
- "threadpool",
-]
-
-[[package]]
-name = "fuser"
-version = "0.11.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "104ed58f182bc2975062cd3fab229e82b5762de420e26cf5645f661402694599"
-dependencies = [
- "libc",
- "log",
- "memchr",
- "page_size 0.4.2",
- "pkg-config",
- "smallvec",
- "users",
- "zerocopy",
-]
-
-[[package]]
 name = "fuser"
 version = "0.12.0"
 source = "git+https://github.com/beinan/fuser.git?branch=master#a9ddc8a7a8cd9f2ba6e7c3bc4c6a76ecad66e6b2"
@@ -958,7 +930,7 @@ dependencies = [
  "libc",
  "log",
  "memchr",
- "page_size 0.5.0",
+ "page_size",
  "pkg-config",
  "smallvec",
  "zerocopy",
@@ -1714,16 +1686,6 @@ name = "outref"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4030760ffd992bef45b0ae3f10ce1aba99e33464c90d14dd7c039884963ddc7a"
-
-[[package]]
-name = "page_size"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eebde548fbbf1ea81a99b128872779c437752fb99f217c45245e1a61dcd9edcd"
-dependencies = [
- "libc",
- "winapi",
-]
 
 [[package]]
 name = "page_size"
@@ -2824,16 +2786,6 @@ name = "urlencoding"
 version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8db7427f936968176eaa7cdf81b7f98b980b18495ec28f1b5791ac3bfe3eea9"
-
-[[package]]
-name = "users"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24cc0f6d6f267b73e5a2cadf007ba8f9bc39c6a6f9666f8cf25ea809a153b032"
-dependencies = [
- "libc",
- "log",
-]
 
 [[package]]
 name = "utf8parse"

@@ -1,9 +1,11 @@
 use fuser::{Filesystem, MountOption};
 use std::ffi::{OsStr, OsString};
 use std::path::Path;
+use crate::async_fuse::fusemt::FuseMT;
 use crate::passthrough::passthrough::PassthroughFS;
 
 mod passthrough;
+mod async_fuse;
 
 struct FairyFS;
 
@@ -22,5 +24,5 @@ pub fn mount_passthrough(mountpoint: &Path, source: &Path) {
 
     let fuse_args = [OsStr::new("-o"), OsStr::new("fsname=passthrufs")];
 
-    fuse_mt::mount(fuse_mt::FuseMT::new(filesystem, 1), mountpoint, &fuse_args[..]).unwrap();
+    async_fuse::mount(FuseMT::new(filesystem, 1), mountpoint, &fuse_args[..]).unwrap();
 }
