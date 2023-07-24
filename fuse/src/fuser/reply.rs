@@ -400,6 +400,7 @@ impl Reply for ReplyLock {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyLock {
     /// Reply to a request with the given open result
     pub fn locked(self, start: u64, end: u64, typ: i32, pid: u32) {
@@ -432,6 +433,7 @@ impl Reply for ReplyBmap {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyBmap {
     /// Reply to a request with the given open result
     pub fn bmap(self, block: u64) {
@@ -448,6 +450,7 @@ impl ReplyBmap {
 /// Ioctl Reply
 ///
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct ReplyIoctl {
     reply: ReplyRaw,
 }
@@ -460,6 +463,7 @@ impl Reply for ReplyIoctl {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyIoctl {
     /// Reply to a request with the given open result
     pub fn ioctl(self, result: i32, data: &[u8]) {
@@ -520,11 +524,13 @@ impl ReplyDirectory {
 /// DirectoryPlus reply
 ///
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct ReplyDirectoryPlus {
     reply: ReplyRaw,
     buf: DirEntPlusList,
 }
 
+#[allow(dead_code)]
 impl ReplyDirectoryPlus {
     /// Creates a new ReplyDirectory with a specified buffer size.
     pub fn new<S: ReplySender>(unique: u64, sender: S, size: usize) -> ReplyDirectoryPlus {
@@ -618,6 +624,7 @@ impl Reply for ReplyLseek {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyLseek {
     /// Reply to a request with seeked offset
     pub fn offset(self, offset: i64) {

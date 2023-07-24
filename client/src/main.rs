@@ -55,7 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     rt.block_on(async {
         let tcp = TcpStream::connect("127.0.0.1:5928").await.unwrap();
         let tcp_wrapper = StreamWrapper::new(tcp);
-        let (mut client, h2) = h2::client::handshake(tcp_wrapper).await.unwrap();
+        let (client, h2) = h2::client::handshake(tcp_wrapper).await.unwrap();
 
         // Spawn a task to run the conn...
         monoio::spawn(async move {

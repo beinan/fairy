@@ -24,6 +24,7 @@ pub enum Response<'a> {
     Slice(&'a [u8]),
 }
 
+#[allow(dead_code)]
 impl<'a> Response<'a> {
     pub(crate) fn with_iovec<F: FnOnce(&[IoSlice<'_>]) -> T, T>(
         &self,
@@ -417,6 +418,7 @@ impl DirEntList {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct DirEntryPlus<T: AsRef<Path>> {
     #[allow(unused)] // We use `attr.ino` instead
     ino: INodeNo,
@@ -428,6 +430,7 @@ pub struct DirEntryPlus<T: AsRef<Path>> {
     attr_valid: Duration,
 }
 
+#[allow(dead_code)]
 impl<T: AsRef<Path>> DirEntryPlus<T> {
     pub fn new(
         ino: INodeNo,
@@ -460,6 +463,7 @@ impl From<DirEntPlusList> for Response<'_> {
     }
 }
 
+#[allow(dead_code)]
 impl DirEntPlusList {
     pub(crate) fn new(max_size: usize) -> Self {
         Self(EntListBuf::new(max_size))

@@ -17,9 +17,7 @@ use crate::async_fuse::directory_cache::*;
 use crate::async_fuse::inode_table::*;
 use crate::async_fuse::types::*;
 
-use log::{error, warn, info, debug};
-use monoio::{FusionRuntime, LegacyDriver, Runtime};
-use monoio::time::TimeDriver;
+use log::{error, debug};
 
 trait IntoRequestInfo {
     fn info(&self) -> RequestInfo;

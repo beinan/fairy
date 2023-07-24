@@ -418,7 +418,7 @@ fn fuse_mount_sys(mountpoint: &OsStr, options: &[MountOption]) -> Result<Option<
         }
         #[cfg(target_os = "macos")]
         {
-            let mut c_options = CString::new(mount_options).unwrap();
+            let c_options = CString::new(mount_options).unwrap();
             libc::mount(
                 c_source.as_ptr(),
                 c_mountpoint.as_ptr(),

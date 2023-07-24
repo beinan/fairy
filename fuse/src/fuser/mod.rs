@@ -4,8 +4,6 @@
 //! advantage of Rust's architecture. The only thing we rely on in the real libfuse are mount
 //! and unmount calls which are needed to establish a fd to talk to the kernel driver.
 
-#![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
-
 use libc::{c_int, ENOSYS, EPERM};
 use log::{debug, warn};
 use mnt::mount_options::parse_options_from_args;
@@ -135,6 +133,7 @@ pub struct FileAttr {
 }
 
 /// Configuration of the fuse kernel module connection
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct KernelConfig {
     capabilities: u32,
@@ -198,6 +197,7 @@ impl KernelConfig {
     /// Set the maximum write size for a single request
     ///
     /// On success returns the previous value. On error returns the nearest value which will succeed
+    #[allow(dead_code)]
     pub fn set_max_write(&mut self, value: u32) -> Result<u32, u32> {
         if value == 0 {
             return Err(1);
@@ -213,6 +213,7 @@ impl KernelConfig {
     /// Set the maximum readahead size
     ///
     /// On success returns the previous value. On error returns the nearest value which will succeed
+    #[allow(dead_code)]
     pub fn set_max_readahead(&mut self, value: u32) -> Result<u32, u32> {
         if value == 0 {
             return Err(1);
@@ -228,6 +229,7 @@ impl KernelConfig {
     /// Add a set of capabilities.
     ///
     /// On success returns Ok, else return bits of capabilities not supported when capabilities you provided are not all supported by kernel.
+    #[allow(dead_code)]
     pub fn add_capabilities(&mut self, capabilities_to_add: u32) -> Result<(), u32> {
         if capabilities_to_add & self.capabilities != capabilities_to_add {
             return Err(capabilities_to_add - (capabilities_to_add & self.capabilities));
@@ -1018,6 +1020,7 @@ pub fn spawn_mount<'a, FS: Filesystem + Send + 'static + 'a, P: AsRef<Path>>(
 /// be unmounted.
 ///
 /// NOTE: This is the corresponding function to mount2.
+#[allow(dead_code)]
 pub fn spawn_mount2<'a, FS: Filesystem + Send + 'static + 'a, P: AsRef<Path>>(
     filesystem: FS,
     mountpoint: P,

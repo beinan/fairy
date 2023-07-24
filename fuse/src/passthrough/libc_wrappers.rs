@@ -9,7 +9,7 @@ use std::mem;
 use std::ptr;
 use std::os::unix::ffi::OsStringExt;
 
-use log::{error, info, debug};
+use log::error;
 
 use crate::passthrough::libc_extras::libc;
 

@@ -1,5 +1,4 @@
 //! Low-level kernel communication.
-
 mod argument;
 pub mod fuse_abi;
 pub(crate) mod reply;

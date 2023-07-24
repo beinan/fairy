@@ -14,7 +14,7 @@ use std::sync::Arc;
 pub type Inode = u64;
 pub type Generation = u64;
 pub type LookupCount = u64;
-use log::{error, warn, info, debug};
+use log::{error, debug};
 
 #[derive(Debug)]
 struct InodeTableEntry {

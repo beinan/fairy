@@ -168,6 +168,7 @@ pub mod consts {
 
     // Flags returned by the open request
     pub const FOPEN_DIRECT_IO: u32 = 1 << 0; // bypass page cache for this open file
+    #[allow(dead_code)]
     pub const FOPEN_KEEP_CACHE: u32 = 1 << 1; // don't invalidate the data cache on open
     #[cfg(feature = "abi-7-10")]
     pub const FOPEN_NONSEEKABLE: u32 = 1 << 2; // the file is not seekable
@@ -176,13 +177,16 @@ pub mod consts {
     #[cfg(feature = "abi-7-31")]
     pub const FOPEN_STREAM: u32 = 1 << 4; // the file is stream-like (no file position at all)
 
+    #[allow(dead_code)]
     #[cfg(target_os = "macos")]
     pub const FOPEN_PURGE_ATTR: u32 = 1 << 30;
+    #[allow(dead_code)]
     #[cfg(target_os = "macos")]
     pub const FOPEN_PURGE_UBC: u32 = 1 << 31;
 
     // Init request/reply flags
     pub const FUSE_ASYNC_READ: u32 = 1 << 0; // asynchronous read requests
+    #[allow(dead_code)]
     pub const FUSE_POSIX_LOCKS: u32 = 1 << 1; // remote locking for POSIX file locks
     #[cfg(feature = "abi-7-9")]
     pub const FUSE_FILE_OPS: u32 = 1 << 2; // kernel sends file handle for fstat, etc...
@@ -234,8 +238,10 @@ pub mod consts {
     #[cfg(feature = "abi-7-30")]
     pub const FUSE_EXPLICIT_INVAL_DATA: u32 = 1 << 25; // only invalidate cached pages on explicit request
 
+    #[allow(dead_code)]
     #[cfg(target_os = "macos")]
     pub const FUSE_ALLOCATE: u32 = 1 << 27;
+    #[allow(dead_code)]
     #[cfg(target_os = "macos")]
     pub const FUSE_EXCHANGE_DATA: u32 = 1 << 28;
     #[cfg(target_os = "macos")]
@@ -298,6 +304,7 @@ pub mod consts {
     pub const FUSE_FSYNC_FDATASYNC: u32 = 1 << 0; // Sync data only, not metadata
 
     // The read buffer is required to be at least 8k, but may be much larger
+    #[allow(dead_code)]
     pub const FUSE_MIN_READ_BUFFER: usize = 8192;
 }
 

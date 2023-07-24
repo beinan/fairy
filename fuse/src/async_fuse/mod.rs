@@ -16,14 +16,12 @@
 // Copyright (c) 2016-2022 by William R. Fraser
 //
 
-#![deny(rust_2018_idioms)]
-
-
 pub mod directory_cache;
 pub mod fusemt;
 pub mod inode_table;
 pub mod types;
 
+#[allow(dead_code)]
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub use crate::fuser::FileType;
@@ -56,6 +54,7 @@ pub fn mount<FS: fuser::Filesystem, P: AsRef<Path>>(
 /// handle filesystem operations while being mounted and therefore returns immediately. The
 /// returned handle should be stored to reference the mounted filesystem. If it's dropped, the
 /// filesystem will be unmounted.
+#[allow(dead_code)]
 #[inline(always)]
 pub fn spawn_mount<FS: fuser::Filesystem + Send + 'static, P: AsRef<Path>>(
     fs: FS,

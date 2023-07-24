@@ -152,11 +152,13 @@ impl<FS: Filesystem> Session<FS> {
     }
 
     /// Unmount the filesystem
+    #[allow(dead_code)]
     pub fn unmount(&mut self) {
         drop(std::mem::take(&mut *self.mount.lock().unwrap()));
     }
 
     /// Returns a thread-safe object that can be used to unmount the Filesystem
+    #[allow(dead_code)]
     pub fn unmount_callable(&mut self) -> SessionUnmounter {
         SessionUnmounter {
             mount: self.mount.clone(),
@@ -172,6 +174,7 @@ pub struct SessionUnmounter {
 
 impl SessionUnmounter {
     /// Unmount the filesystem
+    #[allow(dead_code)]
     pub fn unmount(&mut self) -> io::Result<()> {
         drop(std::mem::take(&mut *self.mount.lock().unwrap()));
         Ok(())
@@ -234,6 +237,7 @@ impl BackgroundSession {
         })
     }
     /// Unmount the filesystem and join the background thread.
+    #[allow(dead_code)]
     pub fn join(self) {
         let Self {
             mountpoint: _,

@@ -24,8 +24,8 @@ use log::{error, info};
 use fairy_common::kv_store::local_kv_store::local_file_kv_store::LocalFileKVStore;
 
 lazy_static! {
-    static ref kv_store: LocalFileKVStore = LocalFileKVStore::new(settings::parse_with_prefix("worker"));
-    static ref h2_addr: String = format!("127.0.0.1:{}", SETTINGS.http2_port);
+    static ref KV_STORE: LocalFileKVStore = LocalFileKVStore::new(settings::parse_with_prefix("worker"));
+    static ref H2_ADDR: String = format!("127.0.0.1:{}", SETTINGS.http2_port);
 }
 
 #[tokio::main]
@@ -47,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
 
 
-        let h2_service = fairy_common::h2::h2_service::H2Service::new(&kv_store, h2_addr.as_str());
+        let h2_service = fairy_common::h2::h2_service::H2Service::new(&KV_STORE, H2_ADDR.as_str());
         let h2_service = h2_service.serve_h2();
 
         let socket_service = async {

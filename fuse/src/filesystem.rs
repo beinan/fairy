@@ -19,7 +19,7 @@ use std::cmp::min;
 use std::collections::BTreeMap;
 use std::ffi::OsStr;
 use std::fs::{File, OpenOptions};
-use std::io::{BufRead, BufReader, ErrorKind, Read, Seek, SeekFrom, Write};
+use std::io::{BufRead, BufReader, Read, Seek, SeekFrom, Write};
 use std::os::raw::c_int;
 use std::os::unix::ffi::OsStrExt;
 use std::os::unix::fs::FileExt;
@@ -28,7 +28,7 @@ use std::os::unix::io::IntoRawFd;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use std::{env, fs, io};
+use std::{fs, io};
 
 const BLOCK_SIZE: u64 = 512;
 const MAX_NAME_LENGTH: u32 = 255;
@@ -247,6 +247,7 @@ struct SimpleFS {
     suid_support: bool,
 }
 
+#[allow(dead_code)]
 impl SimpleFS {
     fn new(
         data_dir: String,
@@ -1081,6 +1082,7 @@ impl Filesystem for SimpleFS {
         reply.entry(&Duration::new(0, 0), &attrs.into(), 0);
     }
 
+    #[allow(unused_variables)]
     fn rename(
         &mut self,
         req: &Request,
@@ -1914,6 +1916,7 @@ fn as_file_kind(mut mode: u32) -> FileKind {
     }
 }
 
+#[allow(unused_variables)]
 fn get_groups(pid: u32) -> Vec<u32> {
     #[cfg(not(target_os = "macos"))]
     {
@@ -1934,6 +1937,7 @@ fn get_groups(pid: u32) -> Vec<u32> {
     vec![]
 }
 
+#[allow(dead_code)]
 fn fuse_allow_other_enabled() -> io::Result<bool> {
     let file = File::open("/etc/fuse.conf")?;
     for line in BufReader::new(file).lines() {

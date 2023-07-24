@@ -120,9 +120,6 @@ pub type ResultXattr = Result<Xattr, libc::c_int>;
 #[cfg(target_os = "macos")]
 pub type ResultXTimes = Result<XTimes, libc::c_int>;
 
-#[deprecated(since = "0.3.0", note = "use ResultEntry instead")]
-pub type ResultGetattr = ResultEntry;
-
 /// Dummy struct returned by the callback in the `read()` method. Cannot be constructed outside
 /// this crate, `read()` requires you to return it, thus ensuring that you don't forget to call the
 /// callback.
