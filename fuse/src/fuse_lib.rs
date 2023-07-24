@@ -7,6 +7,7 @@ use crate::passthrough::passthrough::PassthroughFS;
 mod passthrough;
 mod async_fuse;
 mod fuser;
+mod filesystem;
 
 struct FairyFS;
 

@@ -1,10 +1,9 @@
 use std::error::Error;
-use std::fs::File;
 use std::io::ErrorKind;
 use bytes::Bytes;
-use log::{debug, trace};
+use log::{trace};
 
-use crate::kv_store::{Key, Value};
+use crate::kv_store::{Key};
 use crate::settings::local_kv_options::LocalFileKVStoreOptions;
 
 pub struct LocalFileKVStore {
@@ -34,7 +33,7 @@ impl LocalFileKVStore {
                         Err(e) => return Err(e.to_string().into()),
                     }
                 },
-                other_error => {
+                _other_error => {
                     return Err(error.to_string().into());
                 }
             },

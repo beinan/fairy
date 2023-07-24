@@ -2,7 +2,7 @@ use crate::kv_store::local_kv_store::local_file_kv_store::LocalFileKVStore;
 use bytes::Bytes;
 use h2::RecvStream;
 use h2::server::SendResponse;
-use log::{error, info, debug};
+use log::{error, debug};
 use monoio::net::{TcpListener, TcpStream};
 use monoio_compat::StreamWrapper;
 use http::Request;
@@ -95,7 +95,7 @@ impl H2Service {
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         debug!(">>>> receive {}", id);
         //let mut body = request.into_body();//request.body_mut();
-        let (head, mut body) = request.into_parts();
+        let (_head, mut body) = request.into_parts();
         if let Some(chunk) = body.data().await {
             //println!("receive data {:?}{:?}", head, chunk.unwrap());
             kv_store.put(id, chunk.unwrap()).await.expect("TODO: panic message");
@@ -111,8 +111,6 @@ impl H2Service {
         mut respond: h2::server::SendResponse<bytes::Bytes>,
         kv_store: &LocalFileKVStore
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        let chunk_size = 128;
-
         let response = http::Response::new(());
         let mut send = respond.send_response(response, false)?;
         debug!("h2 is sending data {}", id);
