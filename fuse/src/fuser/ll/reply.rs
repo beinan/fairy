@@ -575,7 +575,7 @@ mod test {
 
         let time = UNIX_EPOCH + Duration::new(0x1234, 0x5678);
         let ttl = Duration::new(0x8765, 0x4321);
-        let attr = crate::FileAttr {
+        let attr = FileAttr {
             ino: 0x11,
             size: 0x22,
             blocks: 0x33,
@@ -634,7 +634,7 @@ mod test {
 
         let time = UNIX_EPOCH + Duration::new(0x1234, 0x5678);
         let ttl = Duration::new(0x8765, 0x4321);
-        let attr = crate::FileAttr {
+        let attr = FileAttr {
             ino: 0x11,
             size: 0x22,
             blocks: 0x33,
@@ -763,7 +763,7 @@ mod test {
 
         let time = UNIX_EPOCH + Duration::new(0x1234, 0x5678);
         let ttl = Duration::new(0x8765, 0x4321);
-        let attr = crate::FileAttr {
+        let attr = FileAttr {
             ino: 0x11,
             size: 0x22,
             blocks: 0x33,

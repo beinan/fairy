@@ -112,5 +112,5 @@ pub fn metrics_result() -> String {
 
     res.push_str(&res_custom);
 
-    return res;
+    res
 }

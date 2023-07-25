@@ -2,7 +2,7 @@ use fuser::{Filesystem, MountOption};
 use std::ffi::{OsStr, OsString};
 use std::path::Path;
 use crate::async_fuse::fusemt::FuseMT;
-use crate::passthrough::passthrough::PassthroughFS;
+use crate::passthrough::passthrough_fs::PassthroughFS;
 
 mod passthrough;
 mod async_fuse;

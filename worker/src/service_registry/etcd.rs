@@ -19,7 +19,7 @@ impl ServiceRegistry {
         let shared_data = Arc::new(RwLock::new(Vec::new()));
 
         Ok(Self {
-            client: client,
+            client,
             shared_data,
         })
     }

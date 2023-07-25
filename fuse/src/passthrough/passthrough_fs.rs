@@ -4,6 +4,7 @@
 //
 // Copyright (c) 2016-2022 by William R. Fraser
 //
+#![allow(clippy::unnecessary_cast)] // libc::S_* are u16 or u32 depending on the platform
 
 use std::ffi::{CStr, CString, OsStr, OsString};
 use std::fs::{self, File};

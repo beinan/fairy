@@ -640,7 +640,7 @@ impl ReplyLseek {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::{FileAttr, FileType};
+    use crate::fuser::{FileAttr, FileType};
     use std::io::IoSlice;
     use std::sync::mpsc::{sync_channel, SyncSender};
     use std::thread;

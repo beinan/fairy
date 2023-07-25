@@ -50,12 +50,12 @@ impl From<Config> for Settings {
             config.get_string("service_discovery_type").unwrap_or(String::from("static"));
         let static_service_list = if service_discovery_type == "static" {
             config.get_string("static_service_list")
-                .unwrap_or(format!("localhost:{}", http_port)).split(",").map(String::from).collect()
+                .unwrap_or(format!("localhost:{}", http_port)).split(',').map(String::from).collect()
         } else {
             Vec::new()
         };
         let etcd_uris = if service_discovery_type == "etcd" {
-            config.get_string("etcd_uris").unwrap_or(String::from("localhost:2379")).split(",").map(String::from).collect()
+            config.get_string("etcd_uris").unwrap_or(String::from("localhost:2379")).split(',').map(String::from).collect()
         } else {
             Vec::new()
         };
