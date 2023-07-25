@@ -273,6 +273,7 @@ mod op {
     use super::{
         abi::consts::*, abi::*, FileHandle, INodeNo, Lock, LockOwner, Operation, RequestId,
     };
+    use crate::fuser::KernelConfig;
     use std::{
         convert::TryInto,
         ffi::OsStr,
@@ -282,7 +283,6 @@ mod op {
         time::{Duration, SystemTime},
     };
     use zerocopy::AsBytes;
-    use crate::fuser::KernelConfig;
 
     /// Look up a directory entry by name and get its attributes.
     ///
@@ -1837,8 +1837,8 @@ mod op {
         })
     }
 }
-use op::*;
 use crate::fuser::ll::Response;
+use op::*;
 
 /// Filesystem operation (and arguments) the kernel driver wants us to perform. The fields of each
 /// variant needs to match the actual arguments the kernel driver sends for the specific operation.

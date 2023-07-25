@@ -2,17 +2,23 @@ use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::Client;
 
 #[allow(dead_code)]
-pub async fn create_s3_client() -> Client{
+pub async fn create_s3_client() -> Client {
     let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
     let config = aws_config::from_env().region(region_provider).load().await;
     Client::new(&config)
 }
 
 #[allow(dead_code)]
-pub async fn list_objects(client: &aws_sdk_s3::Client, bucket_name: &str) -> Result<(), Box<dyn std::error::Error>> {
-
-    let response =
-        client.list_objects_v2().bucket(bucket_name).send().await.expect("List");
+pub async fn list_objects(
+    client: &aws_sdk_s3::Client,
+    bucket_name: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let response = client
+        .list_objects_v2()
+        .bucket(bucket_name)
+        .send()
+        .await
+        .expect("List");
 
     if let Some(objects) = response.contents {
         for object in objects {

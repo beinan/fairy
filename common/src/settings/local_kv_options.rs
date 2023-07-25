@@ -1,5 +1,5 @@
-use config::Config;
 use crate::settings::FromConfig;
+use config::Config;
 
 use log::info;
 use serde::Deserialize;
@@ -14,7 +14,12 @@ pub struct LocalFileKVStoreOptions {
 
 impl FromConfig for LocalFileKVStoreOptions {
     fn from_with_prefix(prefix: &str, config: &Config) -> Self {
-        let root_path = get_config(config, prefix, "local_kv_root_path", String::from("/tmp/fairy_store"));
+        let root_path = get_config(
+            config,
+            prefix,
+            "local_kv_root_path",
+            String::from("/tmp/fairy_store"),
+        );
         let num_bucket = get_config(config, prefix, "local_kv_num_bucket", 1024);
         let chuck_size = get_config(config, prefix, "local_kv_chunk_size", 128 * 1024);
 
@@ -29,7 +34,10 @@ impl FromConfig for LocalFileKVStoreOptions {
 }
 
 fn get_config<'a, T>(config: &Config, prefix: &str, key: &str, default: T) -> T
-    where T: Deserialize<'a>
+where
+    T: Deserialize<'a>,
 {
-    config.get::<T>(format!("{}.{}", prefix, key).as_str()).unwrap_or(default)
+    config
+        .get::<T>(format!("{}.{}", prefix, key).as_str())
+        .unwrap_or(default)
 }

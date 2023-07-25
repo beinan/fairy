@@ -1,9 +1,9 @@
+use bytes::Bytes;
+use log::trace;
 use std::error::Error;
 use std::io::ErrorKind;
-use bytes::Bytes;
-use log::{trace};
 
-use crate::kv_store::{Key};
+use crate::kv_store::Key;
 use crate::settings::local_kv_options::LocalFileKVStoreOptions;
 
 pub struct LocalFileKVStore {
@@ -15,8 +15,7 @@ impl LocalFileKVStore {
         LocalFileKVStore { options }
     }
 
-    pub async fn put<K: Key>(&self, id: K, buf: Bytes) -> Result<(), Box<dyn Error + Send + Sync>>
-    {
+    pub async fn put<K: Key>(&self, id: K, buf: Bytes) -> Result<(), Box<dyn Error + Send + Sync>> {
         let path = self.data_path(id);
         trace!("Start writing data to {}", path.clone());
         let file = match monoio::fs::File::create(&path).await {
@@ -26,13 +25,13 @@ impl LocalFileKVStore {
                     let path = std::path::Path::new(path.as_str());
                     let prefix = path.parent().unwrap();
                     match std::fs::create_dir_all(prefix) {
-                        Ok(_) => match  monoio::fs::File::create(&path).await {
+                        Ok(_) => match monoio::fs::File::create(&path).await {
                             Ok(f) => f,
-                            Err(e) => return Err(e.to_string().into())
+                            Err(e) => return Err(e.to_string().into()),
                         },
                         Err(e) => return Err(e.to_string().into()),
                     }
-                },
+                }
                 _other_error => {
                     return Err(error.to_string().into());
                 }
@@ -46,8 +45,7 @@ impl LocalFileKVStore {
         Ok(())
     }
 
-    pub async fn get<K: Key>(&self, id: K) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>>
-    {
+    pub async fn get<K: Key>(&self, id: K) -> Result<Vec<u8>, Box<dyn Error + Send + Sync>> {
         let path = self.data_path(id);
         let f = monoio::fs::File::open(&path).await?;
         let metadata = std::fs::metadata(&path)?;

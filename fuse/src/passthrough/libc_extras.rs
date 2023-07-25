@@ -25,13 +25,32 @@ pub mod libc {
 
         // These XATTR functions are missing from the libc crate on Darwin for some reason.
         #[cfg(target_os = "macos")]
-        pub fn listxattr(path: *const c_char, list: *mut c_char, size: size_t, options: c_int) -> ssize_t;
+        pub fn listxattr(
+            path: *const c_char,
+            list: *mut c_char,
+            size: size_t,
+            options: c_int,
+        ) -> ssize_t;
 
         #[cfg(target_os = "macos")]
-        pub fn getxattr(path: *const c_char, name: *const c_char, value: *mut c_void, size: size_t, position: u32, options: c_int) -> ssize_t;
+        pub fn getxattr(
+            path: *const c_char,
+            name: *const c_char,
+            value: *mut c_void,
+            size: size_t,
+            position: u32,
+            options: c_int,
+        ) -> ssize_t;
 
         #[cfg(target_os = "macos")]
-        pub fn setxattr(path: *const c_char, name: *const c_char, value: *const c_void, size: size_t, flags: c_int, position: u32) -> c_int;
+        pub fn setxattr(
+            path: *const c_char,
+            name: *const c_char,
+            value: *const c_void,
+            size: size_t,
+            flags: c_int,
+            position: u32,
+        ) -> c_int;
 
         #[cfg(target_os = "macos")]
         pub fn removexattr(path: *const c_char, name: *const c_char, flags: c_int) -> c_int;
@@ -78,8 +97,7 @@ pub mod libc {
     #[cfg(target_os = "macos")]
     pub unsafe fn futimens(fd: c_int, times: *const timespec) -> c_int {
         use super::super::libc_wrappers;
-        let mut times_osx = [timespec_to_timeval(&*times),
-            timespec_to_timeval(&*times)];
+        let mut times_osx = [timespec_to_timeval(&*times), timespec_to_timeval(&*times)];
 
         let mut stat: Option<stat> = None;
 
@@ -115,22 +133,28 @@ pub mod libc {
     // Mac OS X does not support utimensat; map it to lutimes with lower precision.
     // The relative path feature of utimensat is not supported by this workaround.
     #[cfg(target_os = "macos")]
-    pub fn utimensat(dirfd: c_int, path: *const c_char, times: *const timespec,
-                     _flag_ignored: c_int) -> c_int {
+    pub fn utimensat(
+        dirfd: c_int,
+        path: *const c_char,
+        times: *const timespec,
+        _flag_ignored: c_int,
+    ) -> c_int {
         use super::super::libc_wrappers;
         unsafe {
             if dirfd != AT_FDCWD {
-                assert_eq!(*path, b'/' as c_char, "relative paths are not supported here!");
+                assert_eq!(
+                    *path, b'/' as c_char,
+                    "relative paths are not supported here!"
+                );
             }
-            let mut times_osx = [timespec_to_timeval(&*times),
-                timespec_to_timeval(&*times)];
+            let mut times_osx = [timespec_to_timeval(&*times), timespec_to_timeval(&*times)];
 
             let mut stat: Option<stat> = None;
             fn stat_if_needed(path: *const c_char, stat: &mut Option<stat>) -> Result<(), c_int> {
                 use std::ffi::{CStr, OsString};
                 use std::os::unix::ffi::OsStringExt;
                 if stat.is_none() {
-                    let path_c = unsafe { CStr::from_ptr(path) } .to_owned();
+                    let path_c = unsafe { CStr::from_ptr(path) }.to_owned();
                     let path_os = OsString::from_vec(path_c.into_bytes());
                     *stat = Some(libc_wrappers::lstat(path_os)?);
                 }
@@ -181,12 +205,24 @@ pub mod libc {
     }
 
     #[cfg(target_os = "macos")]
-    pub unsafe fn lgetxattr(path: *const c_char, name: *const c_char, value: *mut c_void, size: size_t) -> ssize_t {
+    pub unsafe fn lgetxattr(
+        path: *const c_char,
+        name: *const c_char,
+        value: *mut c_void,
+        size: size_t,
+    ) -> ssize_t {
         getxattr(path, name, value, size, 0, XATTR_NOFOLLOW)
     }
 
     #[cfg(target_os = "macos")]
-    pub unsafe fn lsetxattr(path: *const c_char, name: *const c_char, value: *const c_void, size: size_t, flags: c_int, position: u32) -> c_int {
+    pub unsafe fn lsetxattr(
+        path: *const c_char,
+        name: *const c_char,
+        value: *const c_void,
+        size: size_t,
+        flags: c_int,
+        position: u32,
+    ) -> c_int {
         setxattr(path, name, value, size, flags | XATTR_NOFOLLOW, position)
     }
 

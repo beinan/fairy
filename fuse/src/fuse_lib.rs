@@ -1,19 +1,17 @@
+use crate::async_fuse::fusemt::FuseMT;
+use crate::passthrough::passthrough_fs::PassthroughFS;
 use fuser::{Filesystem, MountOption};
 use std::ffi::{OsStr, OsString};
 use std::path::Path;
-use crate::async_fuse::fusemt::FuseMT;
-use crate::passthrough::passthrough_fs::PassthroughFS;
 
-mod passthrough;
 mod async_fuse;
-mod fuser;
 mod filesystem;
+mod fuser;
+mod passthrough;
 
 struct FairyFS;
 
-impl Filesystem for FairyFS {
-
-}
+impl Filesystem for FairyFS {}
 
 pub fn mount(mountpoint: &Path) {
     fuser::mount2(FairyFS, mountpoint, &[MountOption::AutoUnmount]).unwrap();

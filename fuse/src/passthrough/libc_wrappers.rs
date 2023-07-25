@@ -6,8 +6,8 @@
 use std::ffi::{CString, OsString};
 use std::io;
 use std::mem;
-use std::ptr;
 use std::os::unix::ffi::OsStringExt;
+use std::ptr;
 
 use log::error;
 
@@ -18,12 +18,14 @@ macro_rules! into_cstring {
         match CString::new($path.into_vec()) {
             Ok(s) => s,
             Err(e) => {
-                error!(concat!($syscall, ": path {:?} contains interior NUL byte"),
-                       OsString::from_vec(e.into_vec()));
+                error!(
+                    concat!($syscall, ": path {:?} contains interior NUL byte"),
+                    OsString::from_vec(e.into_vec())
+                );
                 return Err(libc::EINVAL);
             }
         }
-    }
+    };
 }
 
 pub fn opendir(path: OsString) -> Result<u64, libc::c_int> {
@@ -107,7 +109,11 @@ pub fn llistxattr(path: OsString, buf: &mut [u8]) -> Result<usize, libc::c_int> 
     let path_c = into_cstring!(path, "llistxattr");
 
     let result = unsafe {
-        libc::llistxattr(path_c.as_ptr(), buf.as_mut_ptr() as *mut libc::c_char, buf.len())
+        libc::llistxattr(
+            path_c.as_ptr(),
+            buf.as_mut_ptr() as *mut libc::c_char,
+            buf.len(),
+        )
     };
     match result {
         -1 => Err(io::Error::last_os_error().raw_os_error().unwrap()),
@@ -120,8 +126,12 @@ pub fn lgetxattr(path: OsString, name: OsString, buf: &mut [u8]) -> Result<usize
     let name_c = into_cstring!(name, "lgetxattr");
 
     let result = unsafe {
-        libc::lgetxattr(path_c.as_ptr(), name_c.as_ptr(), buf.as_mut_ptr() as *mut libc::c_void,
-                        buf.len())
+        libc::lgetxattr(
+            path_c.as_ptr(),
+            name_c.as_ptr(),
+            buf.as_mut_ptr() as *mut libc::c_void,
+            buf.len(),
+        )
     };
     match result {
         -1 => Err(io::Error::last_os_error().raw_os_error().unwrap()),
@@ -129,22 +139,38 @@ pub fn lgetxattr(path: OsString, name: OsString, buf: &mut [u8]) -> Result<usize
     }
 }
 
-pub fn lsetxattr(path: OsString, name: OsString, value: &[u8], flags: u32, position: u32) -> Result<(), libc::c_int> {
+pub fn lsetxattr(
+    path: OsString,
+    name: OsString,
+    value: &[u8],
+    flags: u32,
+    position: u32,
+) -> Result<(), libc::c_int> {
     let path_c = into_cstring!(path, "lsetxattr");
     let name_c = into_cstring!(name, "lsetxattr");
 
     // MacOS obnoxiously has an non-standard parameter at the end of their lsetxattr...
     #[cfg(target_os = "macos")]
-    unsafe fn real(path: *const libc::c_char, name: *const libc::c_char,
-                   value: *const libc::c_void, size: libc::size_t, flags: libc::c_int,
-                   position: u32) -> libc::c_int {
+    unsafe fn real(
+        path: *const libc::c_char,
+        name: *const libc::c_char,
+        value: *const libc::c_void,
+        size: libc::size_t,
+        flags: libc::c_int,
+        position: u32,
+    ) -> libc::c_int {
         libc::lsetxattr(path, name, value, size, flags, position)
     }
 
     #[cfg(not(target_os = "macos"))]
-    unsafe fn real(path: *const libc::c_char, name: *const libc::c_char,
-                   value: *const libc::c_void, size: libc::size_t, flags: libc::c_int,
-                   _position: u32) -> libc::c_int {
+    unsafe fn real(
+        path: *const libc::c_char,
+        name: *const libc::c_char,
+        value: *const libc::c_void,
+        size: libc::size_t,
+        flags: libc::c_int,
+        _position: u32,
+    ) -> libc::c_int {
         libc::lsetxattr(path, name, value, size, flags)
     }
 
@@ -154,8 +180,14 @@ pub fn lsetxattr(path: OsString, name: OsString, value: &[u8], flags: u32, posit
     }
 
     let result = unsafe {
-        real(path_c.as_ptr(), name_c.as_ptr(), value.as_ptr() as *const libc::c_void,
-             value.len(), flags as libc::c_int, position)
+        real(
+            path_c.as_ptr(),
+            name_c.as_ptr(),
+            value.as_ptr() as *const libc::c_void,
+            value.len(),
+            flags as libc::c_int,
+            position,
+        )
     };
 
     if result == -1 {

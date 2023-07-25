@@ -16,15 +16,16 @@ mod service_registry;
 
 use service_registry::etcd::ServiceRegistry;
 
-use std::error::Error;
 use lazy_static::lazy_static;
+use std::error::Error;
 
 use log::{error, info};
 
 use fairy_common::kv_store::local_kv_store::local_file_kv_store::LocalFileKVStore;
 
 lazy_static! {
-    static ref KV_STORE: LocalFileKVStore = LocalFileKVStore::new(settings::parse_with_prefix("worker"));
+    static ref KV_STORE: LocalFileKVStore =
+        LocalFileKVStore::new(settings::parse_with_prefix("worker"));
     static ref H2_ADDR: String = format!("127.0.0.1:{}", SETTINGS.http2_port);
 }
 
@@ -45,7 +46,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             info!("Running http server on 0.0.0.0:{}", SETTINGS.http_port);
             let _ = serve_http(([0, 0, 0, 0], SETTINGS.http_port), hyper_handler).await;
         };
-
 
         let h2_service = fairy_common::h2::h2_service::H2Service::new(&KV_STORE, H2_ADDR.as_str());
         let h2_service = h2_service.serve_h2();

@@ -39,7 +39,7 @@ lazy_static! {
 pub async fn start_push() -> Result<(), Box<dyn Error>> {
     if SETTINGS.metrics_push_uri.is_none() {
         info!("No prometheus push uri specified");
-        return Ok(())
+        return Ok(());
     }
     tokio::spawn(async move {
         loop {

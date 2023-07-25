@@ -5,8 +5,8 @@
 
 use std::borrow::Borrow;
 use std::cmp::{Eq, PartialEq};
-use std::collections::{HashMap, VecDeque};
 use std::collections::hash_map::Entry::*;
+use std::collections::{HashMap, VecDeque};
 use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -14,7 +14,7 @@ use std::sync::Arc;
 pub type Inode = u64;
 pub type Generation = u64;
 pub type LookupCount = u64;
-use log::{error, debug};
+use log::{debug, error};
 
 #[derive(Debug)]
 struct InodeTableEntry {
@@ -43,7 +43,7 @@ impl InodeTable {
         let mut inode_table = InodeTable {
             table: Vec::new(),
             free_list: VecDeque::new(),
-            by_path: HashMap::new()
+            by_path: HashMap::new(),
         };
         let root = Arc::new(PathBuf::from("/"));
         inode_table.table.push(InodeTableEntry {
@@ -75,7 +75,10 @@ impl InodeTable {
         let previous = self.by_path.insert(path, inode as usize - 1);
         if let Some(previous) = previous {
             error!("inode table buggered: {:?}", self);
-            panic!("attempted to insert duplicate path into inode table: {:?}", previous);
+            panic!(
+                "attempted to insert duplicate path into inode table: {:?}",
+                previous
+            );
         }
         (inode, generation)
     }
@@ -95,7 +98,7 @@ impl InodeTable {
                 entry.path = Some(path);
                 path_entry.insert(inode as usize - 1);
                 (inode, entry.generation)
-            },
+            }
             Occupied(path_entry) => {
                 let idx = path_entry.get();
                 ((idx + 1) as Inode, self.table[*idx].generation)
@@ -135,7 +138,10 @@ impl InodeTable {
 
         let entry = &mut self.table[inode as usize - 1];
         entry.lookups += 1;
-        debug!("lookups on {} -> {:?} now {}", inode, entry.path, entry.lookups);
+        debug!(
+            "lookups on {} -> {:?} now {}",
+            inode, entry.path, entry.lookups
+        );
     }
 
     /// Decrement the lookup count on a given inode by the given number.
@@ -198,14 +204,16 @@ impl InodeTable {
     /// 1st arg should be `&mut self.free_list`; 2nd arg should be `&mut self.table`.
     /// This function's signature is like this instead of taking &mut self so that it can avoid
     /// mutably borrowing *all* fields of self when we only need those two.
-    fn get_inode_entry<'a>(free_list: &mut VecDeque<usize>, table: &'a mut Vec<InodeTableEntry>)
-                           -> (Inode, &'a mut InodeTableEntry) {
+    fn get_inode_entry<'a>(
+        free_list: &mut VecDeque<usize>,
+        table: &'a mut Vec<InodeTableEntry>,
+    ) -> (Inode, &'a mut InodeTableEntry) {
         let idx = match free_list.pop_front() {
             Some(idx) => {
                 debug!("re-using inode {}", idx + 1);
                 table[idx].generation += 1;
                 idx
-            },
+            }
             None => {
                 table.push(InodeTableEntry {
                     path: None,
@@ -243,8 +251,7 @@ impl Hash for Pathish {
     }
 }
 
-impl Eq for Pathish {
-}
+impl Eq for Pathish {}
 
 impl PartialEq for Pathish {
     fn eq(&self, other: &Pathish) -> bool {
