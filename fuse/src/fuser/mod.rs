@@ -18,12 +18,11 @@ use std::time::SystemTime;
 use std::{convert::AsRef, io::ErrorKind};
 
 use ll::fuse_abi::consts::*;
+#[cfg(feature = "abi-7-16")]
+pub use ll::fuse_abi::fuse_forget_one;
 pub use ll::fuse_abi::FUSE_ROOT_ID;
 pub use ll::{fuse_abi::consts, TimeOrNow};
 use mnt::mount_options::check_option_conflicts;
-use session::MAX_WRITE_SIZE;
-#[cfg(feature = "abi-7-16")]
-pub use ll::fuse_abi::fuse_forget_one;
 pub use mnt::mount_options::MountOption;
 #[cfg(target_os = "macos")]
 pub use reply::ReplyXTimes;
@@ -34,6 +33,7 @@ pub use reply::{
     ReplyStatfs, ReplyWrite,
 };
 pub use request::Request;
+use session::MAX_WRITE_SIZE;
 pub use session::{BackgroundSession, Session, SessionUnmounter};
 #[cfg(feature = "abi-7-28")]
 use std::cmp::max;

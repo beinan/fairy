@@ -40,7 +40,9 @@ use hyper::{Body, Method, Request, Response, StatusCode};
 
 use fairy_common::metrics::metrics_result;
 
-pub(crate) async fn hyper_handler(req: Request<Body>) -> Result<Response<Body>, std::convert::Infallible> {
+pub(crate) async fn hyper_handler(
+    req: Request<Body>,
+) -> Result<Response<Body>, std::convert::Infallible> {
     match (req.method(), req.uri().path()) {
         (&Method::GET, "/") => Ok(Response::new(Body::from("Fairy!"))),
         (&Method::GET, "/metrics") => Ok(Response::new(Body::from(metrics_result()))),

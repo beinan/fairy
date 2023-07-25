@@ -106,7 +106,7 @@ impl ServiceRegistry {
     ) -> Result<i64, Box<dyn Error>> {
         // Key and value for the service registration
         let key = format!("services/{}:{}", service_host, service_port);
-        let value = format!("{}:{}", service_host, service_port); 
+        let value = format!("{}:{}", service_host, service_port);
         // Register the service in etcd
         let lease_id = client.lease_grant(40, None).await?.id();
         client

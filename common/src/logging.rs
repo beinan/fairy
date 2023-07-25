@@ -13,7 +13,8 @@ pub fn setup_logger() -> Result<(), fern::InitError> {
                 "{} [{} {} {}] {}",
                 format_args!(
                     "\x1B[{}m",
-                    colors_line.get_color(&record.level()).to_fg_str()),
+                    colors_line.get_color(&record.level()).to_fg_str()
+                ),
                 humantime::format_rfc3339_seconds(SystemTime::now()),
                 record.level(),
                 record.target(),

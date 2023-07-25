@@ -9,9 +9,8 @@ use fuser::consts::FUSE_HANDLE_KILLPRIV;
 use fuser::consts::FUSE_WRITE_KILL_PRIV;
 use fuser::TimeOrNow::Now;
 use fuser::{
-    Filesystem, KernelConfig, ReplyAttr, ReplyCreate, ReplyData, ReplyDirectory,
-    ReplyEmpty, ReplyEntry, ReplyOpen, ReplyStatfs, ReplyWrite, ReplyXattr, Request, TimeOrNow,
-    FUSE_ROOT_ID,
+    Filesystem, KernelConfig, ReplyAttr, ReplyCreate, ReplyData, ReplyDirectory, ReplyEmpty,
+    ReplyEntry, ReplyOpen, ReplyStatfs, ReplyWrite, ReplyXattr, Request, TimeOrNow, FUSE_ROOT_ID,
 };
 use log::{debug, warn};
 use serde::{Deserialize, Serialize};
@@ -670,13 +669,13 @@ impl Filesystem for SimpleFS {
 
             if attrs.uid != req.uid()
                 && !check_access(
-                attrs.uid,
-                attrs.gid,
-                attrs.mode,
-                req.uid(),
-                req.gid(),
-                libc::W_OK,
-            )
+                    attrs.uid,
+                    attrs.gid,
+                    attrs.mode,
+                    req.uid(),
+                    req.gid(),
+                    libc::W_OK,
+                )
             {
                 reply.error(libc::EACCES);
                 return;
@@ -699,13 +698,13 @@ impl Filesystem for SimpleFS {
 
             if attrs.uid != req.uid()
                 && !check_access(
-                attrs.uid,
-                attrs.gid,
-                attrs.mode,
-                req.uid(),
-                req.gid(),
-                libc::W_OK,
-            )
+                    attrs.uid,
+                    attrs.gid,
+                    attrs.mode,
+                    req.uid(),
+                    req.gid(),
+                    libc::W_OK,
+                )
             {
                 reply.error(libc::EACCES);
                 return;
@@ -1218,10 +1217,10 @@ impl Filesystem for SimpleFS {
         if let Ok(new_name_attrs) = self.lookup_name(new_parent, new_name) {
             if new_name_attrs.kind == FileKind::Directory
                 && self
-                .get_directory_content(new_name_attrs.inode)
-                .unwrap()
-                .len()
-                > 2
+                    .get_directory_content(new_name_attrs.inode)
+                    .unwrap()
+                    .len()
+                    > 2
             {
                 reply.error(libc::ENOTEMPTY);
                 return;
@@ -1233,13 +1232,13 @@ impl Filesystem for SimpleFS {
         if inode_attrs.kind == FileKind::Directory
             && parent != new_parent
             && !check_access(
-            inode_attrs.uid,
-            inode_attrs.gid,
-            inode_attrs.mode,
-            req.uid(),
-            req.gid(),
-            libc::W_OK,
-        )
+                inode_attrs.uid,
+                inode_attrs.gid,
+                inode_attrs.mode,
+                req.uid(),
+                req.gid(),
+                libc::W_OK,
+            )
         {
             reply.error(libc::EACCES);
             return;

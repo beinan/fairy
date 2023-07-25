@@ -1,24 +1,20 @@
 use crate::kv_store::local_kv_store::local_file_kv_store::LocalFileKVStore;
 use bytes::Bytes;
-use h2::RecvStream;
 use h2::server::SendResponse;
-use log::{error, debug};
+use h2::RecvStream;
+use http::Request;
+use log::{debug, error};
 use monoio::net::{TcpListener, TcpStream};
 use monoio_compat::StreamWrapper;
-use http::Request;
 
-pub struct H2Service
-{
+pub struct H2Service {
     kv_store: &'static LocalFileKVStore,
-    addr: &'static str
+    addr: &'static str,
 }
 
 impl H2Service {
     pub fn new(kv_store: &'static LocalFileKVStore, addr: &'static str) -> Self {
-        H2Service {
-            kv_store,
-            addr,
-        }
+        H2Service { kv_store, addr }
     }
 
     pub async fn serve_h2(&self) {
@@ -36,7 +32,10 @@ impl H2Service {
         }
     }
 
-    async fn serve(socket: TcpStream, kv_store: &'static LocalFileKVStore) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    async fn serve(
+        socket: TcpStream,
+        kv_store: &'static LocalFileKVStore,
+    ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let socket_wrapper = StreamWrapper::new(socket);
         let mut connection = h2::server::handshake(socket_wrapper).await?;
         debug!("H2 connection bound");
@@ -57,7 +56,7 @@ impl H2Service {
     async fn handle_request(
         request: http::Request<h2::RecvStream>,
         respond: h2::server::SendResponse<bytes::Bytes>,
-        kv_store: &LocalFileKVStore
+        kv_store: &LocalFileKVStore,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         debug!("GOT request: {request:?}");
         let uri_parse_result = H2Service::parse_uri(&request);
@@ -71,7 +70,7 @@ impl H2Service {
         }
     }
 
-    fn parse_uri(request: &http::Request<h2::RecvStream>) -> (&str, String){
+    fn parse_uri(request: &http::Request<h2::RecvStream>) -> (&str, String) {
         let rest_uri: Vec<&str> = {
             let uri = request.uri().path();
             uri.split('/').collect::<Vec<&str>>()
@@ -86,19 +85,21 @@ impl H2Service {
         }
     }
 
-
     async fn put_object(
         id: String,
         request: Request<RecvStream>,
         mut respond: SendResponse<Bytes>,
-        kv_store: &LocalFileKVStore
+        kv_store: &LocalFileKVStore,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         debug!(">>>> receive {}", id);
         //let mut body = request.into_body();//request.body_mut();
         let (_head, mut body) = request.into_parts();
         if let Some(chunk) = body.data().await {
             //println!("receive data {:?}{:?}", head, chunk.unwrap());
-            kv_store.put(id, chunk.unwrap()).await.expect("TODO: panic message");
+            kv_store
+                .put(id, chunk.unwrap())
+                .await
+                .expect("TODO: panic message");
         }
         let response = http::Response::new(());
         let mut send = respond.send_response(response, false)?;
@@ -109,7 +110,7 @@ impl H2Service {
     async fn get_object(
         id: String,
         mut respond: h2::server::SendResponse<bytes::Bytes>,
-        kv_store: &LocalFileKVStore
+        kv_store: &LocalFileKVStore,
     ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let response = http::Response::new(());
         let mut send = respond.send_response(response, false)?;

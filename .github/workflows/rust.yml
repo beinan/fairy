@@ -21,8 +21,6 @@ jobs:
           components: rustfmt
       - name: Rustfmt Check
         uses: actions-rust-lang/rustfmt@v1
-      - name: clippy
-        run: cargo clippy --all-targets -- -D warnings
 
   clippy:
     name: cargo clippy

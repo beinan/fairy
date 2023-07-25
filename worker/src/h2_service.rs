@@ -1,6 +1,6 @@
 use bytes::Bytes;
-use h2::RecvStream;
 use h2::server::SendResponse;
+use h2::RecvStream;
 use http::Request;
 use monoio::net::{TcpListener, TcpStream};
 use monoio_compat::StreamWrapper;
@@ -55,7 +55,7 @@ async fn handle_request(
     }
 }
 
-fn parse_uri(request: &http::Request<h2::RecvStream>) -> (&str, String){
+fn parse_uri(request: &http::Request<h2::RecvStream>) -> (&str, String) {
     let rest_uri: Vec<&str> = {
         let uri = request.uri().path();
         uri.split('/').collect::<Vec<&str>>()
@@ -70,14 +70,13 @@ fn parse_uri(request: &http::Request<h2::RecvStream>) -> (&str, String){
     }
 }
 
-
 async fn put_object(
     id: String,
     request: Request<RecvStream>,
     mut respond: SendResponse<Bytes>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!(">>>> receive {}", id);
-    let mut body = request.into_body();//request.body_mut();
+    let mut body = request.into_body(); //request.body_mut();
 
     while let Some(chunk) = body.data().await {
         println!("GOT CHUNK = {:?}", chunk.unwrap());

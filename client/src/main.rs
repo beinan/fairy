@@ -1,10 +1,9 @@
 mod ufs;
 
-use std::path::PathBuf;
 use bytes::Bytes;
-use h2::client::SendRequest;
 use monoio::net::TcpStream;
 use monoio_compat::StreamWrapper;
+use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
@@ -27,7 +26,7 @@ enum Commands {
     MountPassthrough {
         mountpoint: PathBuf,
         source: PathBuf,
-    }
+    },
 }
 
 #[tokio::main]
@@ -72,11 +71,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn get(client: &mut SendRequest<Bytes>) {
-    let request = http::Request::builder()
-        .uri("/get/1111")
-        .body(())
-        .unwrap();
+#[allow(clippy::needless_pass_by_ref_mut)]
+async fn get(client: &mut h2::client::SendRequest<bytes::Bytes>) {
+    let request = http::Request::builder().uri("/get/1111").body(()).unwrap();
 
     let mut trailers = http::HeaderMap::new();
     trailers.insert("zomg", "hello".parse().unwrap());
@@ -85,7 +82,6 @@ async fn get(client: &mut SendRequest<Bytes>) {
 
     // send trailers
     stream.send_trailers(trailers).unwrap();
-
 
     let response = response.await.unwrap();
     println!("GOT GET RESPONSE: {response:?}");
@@ -101,23 +97,20 @@ async fn get(client: &mut SendRequest<Bytes>) {
         println!("GOT TRAILERS: {trailers:?}");
     }
 }
-
-async fn put(client: &mut SendRequest<Bytes>) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+#[allow(clippy::needless_pass_by_ref_mut)]
+async fn put(
+    client: &mut h2::client::SendRequest<Bytes>,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     //let mut client = client.ready().await.unwrap();
-    let request = http::Request::builder()
-        .uri("/put/1111")
-        .body(())
-        .unwrap();
+    let request = http::Request::builder().uri("/put/1111").body(()).unwrap();
 
     let (response, mut stream) = client.send_request(request, false).unwrap();
-
 
     stream.send_data(bytes::Bytes::from_static(b"world\n"), false)?;
 
     let mut trailers = http::HeaderMap::new();
     trailers.insert("zomg", "hello".parse().unwrap());
     stream.send_trailers(trailers).unwrap();
-
 
     let response = response.await.unwrap();
     println!("GOT PUT RESPONSE: {response:?}");
