@@ -10,15 +10,40 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  # Check formatting with rustfmt
+  formatting:
+    name: cargo fmt
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: rustfmt
+      - name: Rustfmt Check
+        uses: actions-rust-lang/rustfmt@v1
+      - name: clippy
+        run: cargo clippy --all-targets -- -D warnings
 
+  clippy:
+    name: cargo clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+      - name: Install Dependencies
+        run: sudo apt-get install -y protobuf-compiler libprotobuf-dev
+      - name: clippy check
+        run: cargo clippy --all-targets -- -D warnings
+
+  test:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Install Dependencies
       run: sudo apt-get install -y protobuf-compiler libprotobuf-dev
-    - name: Build
-      run: cargo build --verbose
+    - run: cargo --version --verbose
+    - run: rustc --version --verbose
     - name: Run tests
       run: cargo test --verbose
