@@ -180,7 +180,7 @@ fn receive_fusermount_message(socket: &UnixStream) -> Result<File, Error> {
             msg_namelen: 0,
             msg_iov: &mut io_vec,
             msg_iovlen: 1,
-            msg_control: (&mut cmsg_buffer).as_mut_ptr() as *mut libc::c_void,
+            msg_control: cmsg_buffer.as_mut_ptr() as *mut libc::c_void,
             msg_controllen: cmsg_buffer.len() as u32,
             msg_flags: 0,
         };
