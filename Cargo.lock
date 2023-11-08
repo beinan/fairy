@@ -856,6 +856,7 @@ dependencies = [
  "monoio",
  "monoio-compat",
  "page_size",
+ "pkg-config",
  "serde",
  "smallvec",
  "tempfile",
