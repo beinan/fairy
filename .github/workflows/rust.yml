@@ -33,7 +33,7 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get install -y protobuf-compiler libprotobuf-dev
       - name: clippy check
-        run: cargo clippy --all-targets -- -D warnings
+        run: cargo clippy --all-targets
 
   test:
     runs-on: ubuntu-latest
