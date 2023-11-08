@@ -1,7 +1,7 @@
+use anyhow::Result;
 use monoio::io::{AsyncReadRent, AsyncWriteRentExt};
 use monoio::join;
 use monoio::net::{TcpListener, TcpStream};
-
 pub mod h2_service;
 pub mod hyper_service;
 
@@ -30,7 +30,7 @@ lazy_static! {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
     fairy_common::logging::setup_logger().unwrap();
 
     let _ = register().await;

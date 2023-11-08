@@ -2,8 +2,7 @@ use std::env;
 
 use lazy_static::lazy_static;
 
-use std::error::Error;
-
+use anyhow::Result;
 use config::{Config, Environment, File};
 use serde_derive::Deserialize;
 
@@ -91,7 +90,7 @@ impl From<Config> for Settings {
 }
 
 impl Settings {
-    pub fn new() -> Result<Self, Box<dyn Error>> {
+    pub fn new() -> Result<Self> {
         let config_filename = env::var("FAIRY_CONFIG").unwrap_or_else(|_| "fairy_config".into());
         let settings: Settings = Config::builder()
             .add_source(File::with_name(config_filename.as_str()))

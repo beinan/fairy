@@ -824,6 +824,7 @@ dependencies = [
 name = "fairy-common"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bytes",
  "config",
  "fern",
@@ -866,6 +867,7 @@ dependencies = [
 name = "fairy-worker"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "bytes",
  "etcd-client",
  "fairy-common",
