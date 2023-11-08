@@ -34,7 +34,7 @@ pub use reply::{
 };
 pub use request::Request;
 use session::MAX_WRITE_SIZE;
-pub use session::{BackgroundSession, Session, SessionUnmounter};
+pub use session::{BackgroundSession, Session};
 #[cfg(feature = "abi-7-28")]
 use std::cmp::max;
 #[cfg(feature = "abi-7-13")]

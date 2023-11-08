@@ -24,7 +24,6 @@ pub mod types;
 #[allow(dead_code)]
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-pub use crate::async_fuse::fusemt::*;
 pub use crate::async_fuse::types::*;
 pub use crate::fuser::FileType;
 
