@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     match &cli.command {
         Some(Commands::Mount { mountpoint }) => {
-            fairy_fuse::mount(mountpoint);
+            fairy_fuse::uring_mount(mountpoint);
         }
         Some(Commands::MountPassthrough { mountpoint, source }) => {
             fairy_fuse::mount_passthrough(mountpoint, source);
