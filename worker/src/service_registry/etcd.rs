@@ -2,11 +2,17 @@
 
 use etcd_client::{Client, GetOptions, PutOptions};
 use log::{debug, error, info};
-use std::error::Error;
 use std::sync::{Arc, RwLock};
 use tokio::time;
 
 use crate::settings::SETTINGS;
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum ServiceRegistryError {
+    #[error("etcd error: {0}")]
+    EtcdError(#[from] etcd_client::Error),
+}
 
 pub struct ServiceRegistry {
     client: Client,
@@ -14,7 +20,7 @@ pub struct ServiceRegistry {
 }
 
 impl ServiceRegistry {
-    pub async fn new(etcd_endpoints: &Vec<String>) -> Result<Self, Box<dyn Error>> {
+    pub async fn new(etcd_endpoints: &Vec<String>) -> Result<Self, ServiceRegistryError> {
         let client = Client::connect(etcd_endpoints, None).await?;
         let shared_data = Arc::new(RwLock::new(Vec::new()));
 
@@ -24,7 +30,7 @@ impl ServiceRegistry {
         })
     }
 
-    pub async fn run(&self) -> Result<(), Box<dyn Error>> {
+    pub async fn run(&self) -> Result<(), ServiceRegistryError> {
         let shared_data_clone = Arc::clone(&self.shared_data);
         let shared_data_clone2 = Arc::clone(&self.shared_data);
         let mut client_clone = self.client.clone();
@@ -76,7 +82,7 @@ impl ServiceRegistry {
     async fn update_shared_data(
         client: &mut Client,
         shared_data: &Arc<RwLock<Vec<String>>>,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), ServiceRegistryError> {
         let prefix = "services/";
         let options = GetOptions::new().with_prefix();
 
@@ -103,7 +109,7 @@ impl ServiceRegistry {
         client: &mut Client,
         service_host: &String,
         service_port: u16,
-    ) -> Result<i64, Box<dyn Error>> {
+    ) -> Result<i64, ServiceRegistryError> {
         // Key and value for the service registration
         let key = format!("services/{}:{}", service_host, service_port);
         let value = format!("{}:{}", service_host, service_port);
@@ -125,7 +131,7 @@ impl ServiceRegistry {
         Ok(lease_id)
     }
 
-    async fn keep_alive(client: &mut Client, lease_id: i64) -> Result<(), Box<dyn Error>> {
+    async fn keep_alive(client: &mut Client, lease_id: i64) -> Result<(), ServiceRegistryError> {
         let keep_alive_result = client.lease_keep_alive(lease_id).await;
         match keep_alive_result {
             Ok((keeper, _)) => {
@@ -137,5 +143,16 @@ impl ServiceRegistry {
             }
         };
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_etcd_error() {
+        let err = ServiceRegistryError::EtcdError(etcd_client::Error::InvalidArgs("0".to_string()));
+        assert_eq!(format!("{}", err), "etcd error: invalid arguments: 0");
     }
 }

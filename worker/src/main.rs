@@ -14,10 +14,9 @@ use settings::SETTINGS;
 
 mod service_registry;
 
-use service_registry::etcd::ServiceRegistry;
+use service_registry::etcd::{ServiceRegistry, ServiceRegistryError};
 
 use lazy_static::lazy_static;
-use std::error::Error;
 
 use log::{error, info};
 
@@ -95,7 +94,7 @@ async fn echo(mut stream: TcpStream) -> std::io::Result<()> {
     }
 }
 
-async fn register() -> Result<(), Box<dyn Error>> {
+async fn register() -> Result<(), ServiceRegistryError> {
     let registry = ServiceRegistry::new(&SETTINGS.etcd_uris).await?;
     registry.run().await?;
 
