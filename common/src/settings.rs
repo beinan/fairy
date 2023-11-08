@@ -7,8 +7,6 @@ use std::error::Error;
 use config::{Config, Environment, File};
 use serde_derive::Deserialize;
 
-use std::convert::TryInto;
-
 use local_ip_address::local_ip;
 use log::info;
 
@@ -95,18 +93,12 @@ impl From<Config> for Settings {
 impl Settings {
     pub fn new() -> Result<Self, Box<dyn Error>> {
         let config_filename = env::var("FAIRY_CONFIG").unwrap_or_else(|_| "fairy_config".into());
-        let config_builder: Result<Settings, _> = Config::builder()
+        let settings: Settings = Config::builder()
             .add_source(File::with_name(config_filename.as_str()))
             .add_source(Environment::default())
             .build()?
-            .try_into();
-        match config_builder {
-            Ok(settings) => Ok(settings),
-            Err(err) => {
-                eprintln!("Failed to parse settings: {}", err);
-                Err(err.into())
-            }
-        }
+            .into();
+        Ok(settings)
     }
 }
 
