@@ -22,7 +22,7 @@ lazy_static = { workspace = true }
 
 h2 = { workspace = true }
 http = { workspace = true }
-
+anyhow = { workspace = true }
 config = "0.13.1"
 hostname = "0.3"
 local-ip-address = "0.5.3"

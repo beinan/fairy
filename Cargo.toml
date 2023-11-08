@@ -12,7 +12,7 @@ resolver = "2"
 log = "0.4"
 fern = { version = "0.6", features = ["colored"] }
 humantime = "2.1.0"
-
+anyhow = "1"
 tokio = { version = "1.28.1", features = ["full"] }
 
 lazy_static = "1.4"
