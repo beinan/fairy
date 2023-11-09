@@ -5,16 +5,17 @@
 
 use std::borrow::Borrow;
 use std::cmp::{Eq, PartialEq};
-use std::collections::hash_map::Entry::*;
 use std::collections::{HashMap, VecDeque};
+use std::collections::hash_map::Entry::*;
 use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use log::{debug, error};
+
 pub type Inode = u64;
 pub type Generation = u64;
 pub type LookupCount = u64;
-use log::{debug, error};
 
 #[derive(Debug)]
 struct InodeTableEntry {

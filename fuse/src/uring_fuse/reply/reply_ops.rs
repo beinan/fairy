@@ -1,35 +1,10 @@
-use std::{time::{Duration, SystemTime}, io::IoSlice, ffi::OsStr};
+use std::{ffi::OsStr, io::IoSlice, time::Duration};
 
 use libc::c_int;
 
-use crate::uring_fuse::{low_level::{response::Response, lock::Lock, file_meta::{DirEntList, DirEntry, DirEntOffset, DirEntPlusList, DirEntryPlus}}, file_meta::{FileAttr, FileType}};
+use crate::uring_fuse::{file_meta::{FileAttr, FileType}, low_level::{file_meta::{DirEntList, DirEntOffset, DirEntPlusList, DirEntry, DirEntryPlus}, lock::Lock, response::Response}};
 
-use super::{reply_raw::ReplyRaw, Reply, ReplySender};
-
-pub struct ReplyAttr {
-    reply: ReplyRaw,
-}
-
-impl Reply for ReplyAttr {
-    fn new<S: ReplySender>(unique: u64, sender: S) -> ReplyAttr {
-        ReplyAttr {
-            reply: Reply::new(unique, sender),
-        }
-    }
-}
-
-impl ReplyAttr {
-    /// Reply to a request with the given attribute
-    pub fn attr(self, ttl: &Duration, attr: &FileAttr) {
-        self.reply
-            .send_ll(&Response::new_attr(ttl, &attr.into()));
-    }
-
-    /// Reply to a request with the given error code
-    pub fn error(self, err: c_int) {
-        self.reply.error(err);
-    }
-}
+use super::{Reply, reply_raw::ReplyRaw, ReplySender};
 
 ///
 /// XTimes Reply
@@ -78,6 +53,7 @@ impl Reply for ReplyOpen {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyOpen {
     /// Reply to a request with the given open result
     pub fn opened(self, fh: u64, flags: u32) {
@@ -106,6 +82,7 @@ impl Reply for ReplyWrite {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyWrite {
     /// Reply to a request with the given open result
     pub fn written(self, size: u32) {
@@ -133,6 +110,7 @@ impl Reply for ReplyStatfs {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyStatfs {
     /// Reply to a request with the given open result
     #[allow(clippy::too_many_arguments)]
@@ -392,6 +370,7 @@ impl Reply for ReplyXattr {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyXattr {
     /// Reply to a request with the size of the xattr.
     pub fn size(self, size: u32) {

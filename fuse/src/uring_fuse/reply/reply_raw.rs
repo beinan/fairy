@@ -1,8 +1,9 @@
-use super::{ReplySender, Reply};
-use crate::uring_fuse::low_level::{response::Response, errno::Errno};
-
 use libc::c_int;
 use log::{error, warn};
+
+use crate::uring_fuse::low_level::{errno::Errno, response::Response};
+
+use super::{Reply, ReplySender};
 
 pub(crate) struct ReplyRaw {
     /// Unique id of the request to reply to

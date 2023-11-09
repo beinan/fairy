@@ -6,10 +6,7 @@
 #![warn(missing_debug_implementations)]
 #![allow(missing_docs)]
 
-use super::is_mounted;
-use super::mount_options::{option_to_string, MountOption};
-use libc::c_int;
-use log::{debug, error};
+use std::{mem, ptr};
 use std::ffi::{CStr, CString, OsStr};
 use std::fs::{File, OpenOptions};
 use std::io;
@@ -21,7 +18,12 @@ use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::process::{Command, Stdio};
 use std::sync::Arc;
-use std::{mem, ptr};
+
+use libc::c_int;
+use log::{debug, error};
+
+use super::is_mounted;
+use super::mount_options::{MountOption, option_to_string};
 
 const FUSERMOUNT_BIN: &str = "fusermount";
 const FUSERMOUNT3_BIN: &str = "fusermount3";

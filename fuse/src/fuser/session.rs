@@ -5,19 +5,20 @@
 //! filesystem is mounted, the session loop receives, dispatches and replies to kernel requests
 //! for filesystem operations under its mount point.
 
-use libc::{EAGAIN, EINTR, ENODEV, ENOENT};
-use log::{info, warn};
+use std::{io, ops::DerefMut};
 use std::fmt;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
-use std::{io, ops::DerefMut};
 
-use super::ll::fuse_abi as abi;
-use super::request::Request;
-use super::Filesystem;
-use super::MountOption;
+use libc::{EAGAIN, EINTR, ENODEV, ENOENT};
+use log::{info, warn};
+
 use super::{channel::Channel, mnt::Mount};
+use super::Filesystem;
+use super::ll::fuse_abi as abi;
+use super::MountOption;
+use super::request::Request;
 
 /// The max size of write requests from the kernel. The absolute minimum is 4k,
 /// FUSE recommends at least 128k, max 16M. The FUSE default is 16M on macOS

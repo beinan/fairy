@@ -1,8 +1,3 @@
-use super::fuse3_sys::{
-    fuse_session_destroy, fuse_session_fd, fuse_session_mount, fuse_session_new,
-    fuse_session_unmount,
-};
-use super::{with_fuse_args, MountOption};
 use std::{
     ffi::{c_void, CString},
     fs::File,
@@ -11,6 +6,12 @@ use std::{
     path::Path,
     ptr,
     sync::Arc,
+};
+
+use super::{MountOption, with_fuse_args};
+use super::fuse3_sys::{
+    fuse_session_destroy, fuse_session_fd, fuse_session_mount, fuse_session_new,
+    fuse_session_unmount,
 };
 
 /// Ensures that an os error is never 0/Success

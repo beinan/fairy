@@ -1,17 +1,19 @@
+use std::{io, path::Path, time::{Duration, SystemTime}};
+
+use self::{filesystem::Filesystem, mount::MountOption, session::Session};
 use self::low_level::consts::*;
 use self::session::MAX_WRITE_SIZE;
-use self::{filesystem::Filesystem, session::Session, mount::MountOption};
 
-use std::{io, time::{Duration, SystemTime}, path::Path};
-
-mod file_meta;
+pub mod file_meta;
 pub mod filesystem;
-mod low_level;
-mod reply;
-mod request;
+pub mod reply;
+pub mod request;
+pub mod uring_fs;
 mod session;
 pub mod mount;
 mod channel;
+
+mod low_level;
 
 pub(crate) fn mount<FS, P>(
     file_system: FS,
@@ -92,6 +94,7 @@ impl KernelConfig {
     ///
     /// On success returns the previous value. On error returns the nearest value which will succeed
     #[cfg(feature = "abi-7-23")]
+    #[allow(dead_code)]
     pub fn set_time_granularity(&mut self, value: Duration) -> Result<Duration, Duration> {
         if value.as_nanos() == 0 {
             return Err(Duration::new(0, 1));
@@ -160,6 +163,7 @@ impl KernelConfig {
     ///
     /// On success returns the previous value. On error returns the nearest value which will succeed
     #[cfg(feature = "abi-7-13")]
+    #[allow(dead_code)]
     pub fn set_max_background(&mut self, value: u16) -> Result<u16, u16> {
         if value == 0 {
             return Err(1);
@@ -174,6 +178,7 @@ impl KernelConfig {
     ///
     /// On success returns the previous value. On error returns the nearest value which will succeed
     #[cfg(feature = "abi-7-13")]
+    #[allow(dead_code)]
     pub fn set_congestion_threshold(&mut self, value: u16) -> Result<u16, u16> {
         if value == 0 {
             return Err(1);

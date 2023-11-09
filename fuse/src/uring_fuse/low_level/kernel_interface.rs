@@ -21,10 +21,12 @@
 #![warn(missing_debug_implementations)]
 #![allow(missing_docs)]
 
+use std::convert::TryFrom;
+
+use zerocopy::{AsBytes, FromBytes};
+
 #[cfg(feature = "abi-7-9")]
 use crate::uring_fuse::low_level::consts::{FATTR_ATIME_NOW, FATTR_MTIME_NOW};
-use std::convert::TryFrom;
-use zerocopy::{AsBytes, FromBytes};
 
 pub const FUSE_KERNEL_VERSION: u32 = 7;
 

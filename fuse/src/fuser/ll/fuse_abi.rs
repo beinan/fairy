@@ -21,10 +21,12 @@
 #![warn(missing_debug_implementations)]
 #![allow(missing_docs)]
 
+use std::convert::TryFrom;
+
+use zerocopy::{AsBytes, FromBytes};
+
 #[cfg(feature = "abi-7-9")]
 use crate::fuser::consts::{FATTR_ATIME_NOW, FATTR_MTIME_NOW};
-use std::convert::TryFrom;
-use zerocopy::{AsBytes, FromBytes};
 
 pub const FUSE_KERNEL_VERSION: u32 = 7;
 
@@ -139,6 +141,7 @@ pub struct fuse_file_lock {
     pub pid: u32,
 }
 
+#[allow(dead_code)]
 pub mod consts {
     // Bitmasks for fuse_setattr_in.valid
     pub const FATTR_MODE: u32 = 1 << 0;

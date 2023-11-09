@@ -1,13 +1,13 @@
 //! Low-level kernel communication.
-mod argument;
-pub mod fuse_abi;
-pub(crate) mod reply;
-mod request;
-
 use std::{convert::TryInto, num::NonZeroI32, time::SystemTime};
 
 pub use reply::Response;
 pub use request::{AnyRequest, FileHandle, INodeNo, Lock, Operation, Request, RequestId, Version};
+
+mod argument;
+pub mod fuse_abi;
+pub(crate) mod reply;
+mod request;
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 /// Possible input arguments for atime & mtime, which can either be set to a specified time,
@@ -265,6 +265,7 @@ impl From<Generation> for u64 {
 #[cfg(test)]
 mod test {
     use std::ops::{Deref, DerefMut};
+
     /// If we want to be able to cast bytes to our fuse C struct types we need it
     /// to be aligned.  This struct helps getting &[u8]s which are 8 byte aligned.
     #[cfg(test)]

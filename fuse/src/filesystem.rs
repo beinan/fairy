@@ -1,19 +1,7 @@
 #![allow(clippy::needless_return)]
 #![allow(clippy::unnecessary_cast)] // libc::S_* are u16 or u32 depending on the platform
 
-use crate::fuser;
-use fuser::consts::FOPEN_DIRECT_IO;
-#[cfg(feature = "abi-7-26")]
-use fuser::consts::FUSE_HANDLE_KILLPRIV;
-#[cfg(feature = "abi-7-31")]
-use fuser::consts::FUSE_WRITE_KILL_PRIV;
-use fuser::TimeOrNow::Now;
-use fuser::{
-    Filesystem, KernelConfig, ReplyAttr, ReplyCreate, ReplyData, ReplyDirectory, ReplyEmpty,
-    ReplyEntry, ReplyOpen, ReplyStatfs, ReplyWrite, ReplyXattr, Request, TimeOrNow, FUSE_ROOT_ID,
-};
-use log::{debug, warn};
-use serde::{Deserialize, Serialize};
+use std::{fs, io};
 use std::cmp::min;
 use std::collections::BTreeMap;
 use std::ffi::OsStr;
@@ -27,7 +15,20 @@ use std::os::unix::io::IntoRawFd;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use std::{fs, io};
+
+use log::{debug, warn};
+use serde::{Deserialize, Serialize};
+
+use fuser::{
+    Filesystem, FUSE_ROOT_ID, KernelConfig, ReplyAttr, ReplyCreate, ReplyData, ReplyDirectory,
+    ReplyEmpty, ReplyEntry, ReplyOpen, ReplyStatfs, ReplyWrite, ReplyXattr, Request, TimeOrNow,
+};
+use fuser::consts::FOPEN_DIRECT_IO;
+#[cfg(feature = "abi-7-26")]
+use fuser::consts::FUSE_HANDLE_KILLPRIV;
+use fuser::TimeOrNow::Now;
+
+use crate::fuser;
 
 const BLOCK_SIZE: u64 = 512;
 const MAX_NAME_LENGTH: u32 = 255;

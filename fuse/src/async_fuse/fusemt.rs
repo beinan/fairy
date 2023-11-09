@@ -9,15 +9,14 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::SystemTime;
 
-use crate::fuser;
-use crate::fuser::TimeOrNow;
+use log::{debug, error};
 use threadpool::ThreadPool;
 
 use crate::async_fuse::directory_cache::*;
 use crate::async_fuse::inode_table::*;
 use crate::async_fuse::types::*;
-
-use log::{debug, error};
+use crate::fuser;
+use crate::fuser::TimeOrNow;
 
 trait IntoRequestInfo {
     fn info(&self) -> RequestInfo;

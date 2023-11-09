@@ -1,12 +1,13 @@
+use std::time::Duration;
+
+use libc::c_int;
+
 use crate::uring_fuse::file_meta::FileAttr;
 use crate::uring_fuse::low_level::response::Response;
 
 use super::Reply;
-use super::ReplySender;
 use super::reply_raw::ReplyRaw;
-
-use libc::c_int;
-use std::time::Duration;
+use super::ReplySender;
 
 pub struct ReplyEntry {
     reply: ReplyRaw,

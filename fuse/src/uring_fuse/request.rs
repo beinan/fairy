@@ -1,13 +1,12 @@
 use std::path::Path;
 
-use crate::uring_fuse::{low_level::{operation::Operation, version::Version, kernel_interface::{FUSE_KERNEL_VERSION, FUSE_KERNEL_MINOR_VERSION}}, KernelConfig};
+use log::{debug, error, warn};
 
-use super::{low_level::{op::AnyRequest, response::Response, errno::Errno}, channel::ChannelSender, filesystem::Filesystem, session::{Session, SessionACL}, reply::{reply_ops::{ReplyDirectory, ReplyDirectoryPlus}, Reply}};
-
-use super::low_level::request::Request as ll_request;
+use crate::uring_fuse::{KernelConfig, low_level::{kernel_interface::{FUSE_KERNEL_MINOR_VERSION, FUSE_KERNEL_VERSION}, operation::Operation, version::Version}};
 use crate::uring_fuse::reply::ReplySender;
 
-use log::{debug, error, warn};
+use super::{channel::ChannelSender, filesystem::Filesystem, low_level::{errno::Errno, op::AnyRequest, response::Response}, reply::{Reply, reply_ops::{ReplyDirectory, ReplyDirectoryPlus}}, session::{Session, SessionACL}};
+use super::low_level::request::Request as ll_request;
 
 pub struct Request<'a> {
     /// Channel sender for sending the reply
@@ -19,6 +18,7 @@ pub struct Request<'a> {
     request: AnyRequest<'a>,
 }
 
+#[allow(dead_code)]
 impl<'a> Request<'a> {
     /// Create a new request from the given data
     pub(crate) fn new(ch: ChannelSender, data: &'a [u8]) -> Option<Request<'a>> {

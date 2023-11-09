@@ -15,12 +15,11 @@ use std::os::unix::io::{FromRawFd, IntoRawFd};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
-use crate::passthrough::libc_extras::libc;
-use crate::passthrough::libc_wrappers;
+use log::{debug, error, warn};
 
 use crate::async_fuse::*;
-
-use log::{debug, error, warn};
+use crate::passthrough::libc_extras::libc;
+use crate::passthrough::libc_wrappers;
 
 pub struct PassthroughFS {
     pub target: OsString,

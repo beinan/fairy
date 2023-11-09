@@ -6,27 +6,27 @@
 //! data without cloning the data. A reply *must always* be used (by calling either ok() or
 //! error() exactly once).
 
-use super::ll::{
-    self,
-    reply::{DirEntPlusList, DirEntryPlus},
-    Generation,
-};
-use super::ll::{
-    reply::{DirEntList, DirEntOffset, DirEntry},
-    INodeNo,
-};
-use libc::c_int;
-use log::{error, warn};
 use std::convert::AsRef;
 use std::ffi::OsStr;
 use std::fmt;
 use std::io::IoSlice;
 use std::time::Duration;
-
 #[cfg(target_os = "macos")]
 use std::time::SystemTime;
 
+use libc::c_int;
+use log::{error, warn};
+
 use super::{FileAttr, FileType};
+use super::ll::{
+    self,
+    Generation,
+    reply::{DirEntPlusList, DirEntryPlus},
+};
+use super::ll::{
+    INodeNo,
+    reply::{DirEntList, DirEntOffset, DirEntry},
+};
 
 /// Generic reply callback to send data
 pub trait ReplySender: Send + Sync + Unpin + 'static {
@@ -639,13 +639,16 @@ impl ReplyLseek {
 
 #[cfg(test)]
 mod test {
-    use super::*;
-    use crate::fuser::{FileAttr, FileType};
     use std::io::IoSlice;
     use std::sync::mpsc::{sync_channel, SyncSender};
     use std::thread;
     use std::time::{Duration, UNIX_EPOCH};
+
     use zerocopy::AsBytes;
+
+    use crate::fuser::{FileAttr, FileType};
+
+    use super::*;
 
     #[derive(Debug, AsBytes)]
     #[repr(C)]

@@ -1,11 +1,11 @@
-mod fuse_pure;
-pub mod mount_options;
-
 use std::{fs::File, io};
 use std::ffi::CStr;
-pub use mount_options::MountOption;
 
 pub use fuse_pure::Mount;
+pub use mount_options::MountOption;
+
+mod fuse_pure;
+pub mod mount_options;
 
 #[inline]
 fn libc_umount(mnt: &CStr) -> io::Result<()> {

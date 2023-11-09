@@ -6,9 +6,10 @@
 #![warn(missing_debug_implementations)]
 #![allow(missing_docs)]
 
-use super::fuse2_sys::fuse_args;
-use libc::c_void;
 use libc::{c_char, c_int};
+use libc::c_void;
+
+use super::fuse2_sys::fuse_args;
 
 extern "C" {
     // Really this returns *fuse_session, but we don't need to access its fields
