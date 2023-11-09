@@ -16,6 +16,14 @@
 // Copyright (c) 2016-2022 by William R. Fraser
 //
 
+use std::ffi::OsStr;
+use std::io;
+use std::path::Path;
+
+pub use crate::async_fuse::types::*;
+use crate::fuser;
+pub use crate::fuser::FileType;
+
 pub mod directory_cache;
 pub mod fusemt;
 pub mod inode_table;
@@ -24,18 +32,9 @@ pub mod types;
 #[allow(dead_code)]
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-pub use crate::async_fuse::types::*;
-pub use crate::fuser::FileType;
-
-use crate::fuser;
-
 // Forward to similarly-named fuser functions to work around deprecation for now.
 // When these are removed, we'll have to either reimplement or break reverse compat.
 // Keep the doc comments in sync with those in fuser.
-
-use std::ffi::OsStr;
-use std::io;
-use std::path::Path;
 
 /// Mount the given filesystem to the given mountpoint. This function will not return until the
 /// filesystem is unmounted.

@@ -2,7 +2,7 @@ use libc::c_int;
 
 use crate::uring_fuse::low_level::response::Response;
 
-use super::{reply_raw::ReplyRaw, Reply, ReplySender};
+use super::{Reply, reply_raw::ReplyRaw, ReplySender};
 
 ///
 /// Data reply
@@ -19,6 +19,7 @@ impl Reply for ReplyData {
     }
 }
 
+#[allow(dead_code)]
 impl ReplyData {
     /// Reply to a request with the given data
     pub fn data(self, data: &[u8]) {

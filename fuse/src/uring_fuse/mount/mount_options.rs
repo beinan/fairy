@@ -1,7 +1,8 @@
 #![allow(clippy::upper_case_acronyms)]
+
+use std::{collections::HashSet, ffi::OsStr};
 use std::io;
 use std::io::ErrorKind;
-use std::{collections::HashSet, ffi::OsStr};
 
 /// Mount options accepted by the FUSE filesystem type
 /// See 'man mount.fuse' for details
@@ -59,6 +60,7 @@ pub enum MountOption {
     to libfuse, and not part of the kernel ABI */
 }
 
+#[allow(dead_code)]
 impl MountOption {
     pub(crate) fn from_str(s: &str) -> MountOption {
         match s {
@@ -86,6 +88,7 @@ impl MountOption {
     }
 }
 
+#[allow(dead_code)]
 pub fn check_option_conflicts(options: &[MountOption]) -> Result<(), io::Error> {
     let mut options_set = HashSet::new();
     options_set.extend(options.iter().cloned());
@@ -101,6 +104,7 @@ pub fn check_option_conflicts(options: &[MountOption]) -> Result<(), io::Error> 
     }
 }
 
+#[allow(dead_code)]
 fn conflicts_with(option: &MountOption) -> Vec<MountOption> {
     match option {
         MountOption::FSName(_) => vec![],
@@ -158,6 +162,7 @@ pub fn option_to_string(option: &MountOption) -> String {
 ///
 /// Input: ["-o", "suid", "-o", "ro,nodev,noexec", "-osync"]
 /// Output Ok([Suid, RO, NoDev, NoExec, Sync])
+#[allow(dead_code)]
 pub(crate) fn parse_options_from_args(args: &[&OsStr]) -> io::Result<Vec<MountOption>> {
     let err = |x| io::Error::new(ErrorKind::InvalidInput, x);
     let args: Option<Vec<_>> = args.iter().map(|x| x.to_str()).collect();

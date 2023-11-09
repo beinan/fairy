@@ -4,6 +4,9 @@
 use std::ffi::{OsStr, OsString};
 use std::path::Path;
 
+use uring_fuse::uring_fs::{inode::InodeManager, UringFilesystem};
+use crate::uring_fuse::uring_fs::list_cache::ListStatusCache;
+
 mod async_fuse;
 mod filesystem;
 mod fuser;
@@ -15,11 +18,11 @@ struct FairyFS;
 
 impl crate::fuser::Filesystem for FairyFS {}
 
-struct UringFilesystem;
-impl crate::uring_fuse::filesystem::Filesystem for UringFilesystem {}
-
 pub fn uring_mount(mountpoint: &Path) {
-    uring_fuse::mount(UringFilesystem, mountpoint).unwrap();
+    uring_fuse::mount(
+        UringFilesystem::new(InodeManager::new(""), ListStatusCache::new()),
+        mountpoint
+    ).unwrap();
 }
 
 pub fn mount(mountpoint: &Path) {

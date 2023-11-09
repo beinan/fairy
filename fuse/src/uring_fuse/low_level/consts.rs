@@ -1,4 +1,3 @@
-
 // Bitmasks for fuse_setattr_in.valid
 pub const FATTR_MODE: u32 = 1 << 0;
 pub const FATTR_UID: u32 = 1 << 1;

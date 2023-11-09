@@ -13,6 +13,7 @@ monoio = { workspace = true }
 monoio-compat = { workspace = true }
 
 log = { workspace= true }
+thiserror = { workspace = true }
 
 libc = "0.2.147"
 

@@ -5,19 +5,20 @@
 //! filesystem is mounted, the session loop receives, dispatches and replies to kernel requests
 //! for filesystem operations under its mount point.
 
-use libc::{EAGAIN, EINTR, ENODEV, ENOENT};
-use log::{info, warn};
+use std::{io, ops::DerefMut};
 use std::fmt;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
-use std::{io, ops::DerefMut};
 
-use super::low_level::kernel_interface as abi;
-use super::request::Request;
-use super::filesystem::Filesystem;
-use super::mount::MountOption;
+use libc::{EAGAIN, EINTR, ENODEV, ENOENT};
+use log::{info, warn};
+
 use super::{channel::Channel, mount::Mount};
+use super::filesystem::Filesystem;
+use super::low_level::kernel_interface as abi;
+use super::mount::MountOption;
+use super::request::Request;
 
 /// The max size of write requests from the kernel. The absolute minimum is 4k,
 /// FUSE recommends at least 128k, max 16M. The FUSE default is 16M on macOS
@@ -192,6 +193,7 @@ fn aligned_sub_buf(buf: &mut [u8], alignment: usize) -> &mut [u8] {
 
 impl<FS: 'static + Filesystem + Send> Session<FS> {
     /// Run the session loop in a background thread
+    #[allow(dead_code)]
     pub fn spawn(self) -> io::Result<BackgroundSession> {
         BackgroundSession::new(self)
     }
@@ -217,6 +219,7 @@ pub struct BackgroundSession {
     _mount: Mount,
 }
 
+#[allow(dead_code)]
 impl BackgroundSession {
     /// Create a new background session for the given session by running its
     /// session loop in a background thread. If the returned handle is dropped,

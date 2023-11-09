@@ -2,6 +2,24 @@
 //!
 //! Raw communication channel to the FUSE kernel driver.
 
+#[cfg(not(feature = "libfuse3"))]
+use std::ffi::CStr;
+#[cfg(any(test, not(feature = "libfuse")))]
+use std::fs::File;
+#[cfg(any(test, not(feature = "libfuse"), not(feature = "libfuse3")))]
+use std::io;
+
+#[cfg(feature = "libfuse2")]
+pub use fuse2::Mount;
+#[cfg(any(feature = "libfuse", test))]
+use fuse2_sys::fuse_args;
+#[cfg(feature = "libfuse3")]
+pub use fuse3::Mount;
+#[cfg(not(feature = "libfuse"))]
+pub use fuse_pure::Mount;
+#[cfg(any(feature = "libfuse", test))]
+use mount_options::MountOption;
+
 #[cfg(feature = "libfuse2")]
 mod fuse2;
 #[cfg(any(feature = "libfuse", test))]
@@ -14,16 +32,6 @@ mod fuse3_sys;
 #[cfg(not(feature = "libfuse"))]
 mod fuse_pure;
 pub mod mount_options;
-
-#[cfg(any(feature = "libfuse", test))]
-use fuse2_sys::fuse_args;
-#[cfg(any(test, not(feature = "libfuse")))]
-use std::fs::File;
-#[cfg(any(test, not(feature = "libfuse"), not(feature = "libfuse3")))]
-use std::io;
-
-#[cfg(any(feature = "libfuse", test))]
-use mount_options::MountOption;
 
 /// Helper function to provide options as a fuse_args struct
 /// (which contains an argc count and an argv pointer)
@@ -46,15 +54,6 @@ fn with_fuse_args<T, F: FnOnce(&fuse_args) -> T>(options: &[MountOption], f: F) 
         allocated: 0,
     })
 }
-
-#[cfg(feature = "libfuse2")]
-pub use fuse2::Mount;
-#[cfg(feature = "libfuse3")]
-pub use fuse3::Mount;
-#[cfg(not(feature = "libfuse"))]
-pub use fuse_pure::Mount;
-#[cfg(not(feature = "libfuse3"))]
-use std::ffi::CStr;
 
 #[cfg(not(feature = "libfuse3"))]
 #[inline]
@@ -120,8 +119,9 @@ fn is_mounted(fuse_device: &File) -> bool {
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use std::{ffi::CStr, mem::ManuallyDrop};
+
+    use super::*;
 
     #[test]
     fn fuse_args() {

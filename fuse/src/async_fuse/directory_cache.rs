@@ -3,9 +3,10 @@
 // Copyright (c) 2017-2019 by William R. Fraser
 //
 
-use crate::async_fuse::types::DirectoryEntry;
 use std::collections::HashMap;
 use std::num::Wrapping;
+
+use crate::async_fuse::types::DirectoryEntry;
 
 /// Directory entry cache.
 ///

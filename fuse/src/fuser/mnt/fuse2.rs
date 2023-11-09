@@ -1,5 +1,3 @@
-use super::{fuse2_sys::*, with_fuse_args, MountOption};
-use log::warn;
 use std::{
     ffi::CString,
     fs::File,
@@ -8,6 +6,10 @@ use std::{
     path::Path,
     sync::Arc,
 };
+
+use log::warn;
+
+use super::{MountOption, with_fuse_args};
 
 /// Ensures that an os error is never 0/Success
 fn ensure_last_os_error() -> io::Error {

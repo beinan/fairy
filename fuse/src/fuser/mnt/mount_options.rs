@@ -1,7 +1,8 @@
 #![allow(clippy::upper_case_acronyms)]
+
+use std::{collections::HashSet, ffi::OsStr};
 use std::io;
 use std::io::ErrorKind;
-use std::{collections::HashSet, ffi::OsStr};
 
 /// Mount options accepted by the FUSE filesystem type
 /// See 'man mount.fuse' for details

@@ -1,14 +1,14 @@
-use super::{kernel_interface as abi, lock::Lock, errno::Errno, file_meta::{Attr, EntListBuf}};
-
 use std::{
     convert::TryInto,
     io::IoSlice,
     mem::size_of,
-    time::{Duration, SystemTime},
+    time::Duration,
 };
 
 use smallvec::{smallvec, SmallVec};
 use zerocopy::AsBytes;
+
+use super::{errno::Errno, file_meta::{Attr, EntListBuf}, kernel_interface as abi, lock::Lock};
 
 const INLINE_DATA_THRESHOLD: usize = size_of::<u64>() * 4;
 pub(crate) type ResponseBuf = SmallVec<[u8; INLINE_DATA_THRESHOLD]>;

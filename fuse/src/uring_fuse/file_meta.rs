@@ -37,6 +37,7 @@ pub struct FileAttr {
 /// File types
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[cfg_attr(feature = "serializable", derive(Serialize, Deserialize))]
+#[allow(dead_code)]
 pub enum FileType {
     /// Named pipe (S_IFIFO)
     NamedPipe,

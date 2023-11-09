@@ -1,6 +1,6 @@
 use std::{error, fmt, mem};
 
-use super::{kernel_interface::fuse_in_header, errno::Errno, response::Response};
+use super::{errno::Errno, kernel_interface::fuse_in_header, response::Response};
 
 /// Error that may occur while reading and parsing a request from the kernel driver.
 #[derive(Debug)]

@@ -1,23 +1,24 @@
-use super::lock::Lock;
-use super::response::Response;
-use super::lock::LockOwner;
-use super::operation::Operation;
-use super::argument::ArgumentIterator;
-use super::kernel_interface::*;
-use super::kernel_interface::consts::*;
-use super::request::{Request,RequestError};
-
-use crate::uring_fuse::{TimeOrNow, KernelConfig};
 use std::{
     convert::TryInto,
     ffi::OsStr,
-    fmt::{Display, self},
+    fmt::{self, Display},
+    mem,
     num::NonZeroU32,
-    path::Path,
-    time::{Duration, SystemTime}, mem,
+    path::Path, time::{Duration, SystemTime},
 };
+
 use zerocopy::AsBytes;
 
+use crate::uring_fuse::{KernelConfig, TimeOrNow};
+
+use super::argument::ArgumentIterator;
+use super::kernel_interface::*;
+use super::kernel_interface::consts::*;
+use super::lock::Lock;
+use super::lock::LockOwner;
+use super::operation::Operation;
+use super::request::{Request, RequestError};
+use super::response::Response;
 
 macro_rules! impl_request {
     ($structname: ty) => {

@@ -7,11 +7,13 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-use super::{fuse_abi as abi, Errno, FileHandle, Generation, INodeNo};
-use super::{Lock, RequestId};
-use crate::fuser::{FileAttr, FileType};
 use smallvec::{smallvec, SmallVec};
 use zerocopy::AsBytes;
+
+use crate::fuser::{FileAttr, FileType};
+
+use super::{Errno, FileHandle, fuse_abi as abi, Generation, INodeNo};
+use super::{Lock, RequestId};
 
 const INLINE_DATA_THRESHOLD: usize = size_of::<u64>() * 4;
 pub(crate) type ResponseBuf = SmallVec<[u8; INLINE_DATA_THRESHOLD]>;

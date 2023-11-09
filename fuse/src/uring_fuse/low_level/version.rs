@@ -1,4 +1,4 @@
-use std::fmt::{Display, self};
+use std::fmt::{self, Display};
 
 /// A newtype for ABI version
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

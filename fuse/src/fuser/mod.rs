@@ -4,41 +4,42 @@
 //! advantage of Rust's architecture. The only thing we rely on in the real libfuse are mount
 //! and unmount calls which are needed to establish a fd to talk to the kernel driver.
 
-use libc::{c_int, ENOSYS, EPERM};
-use log::{debug, warn};
-use mnt::mount_options::parse_options_from_args;
-#[cfg(feature = "serializable")]
-use serde::{Deserialize, Serialize};
+use std::{convert::AsRef, io::ErrorKind};
+#[cfg(feature = "abi-7-28")]
+use std::cmp::max;
+#[cfg(feature = "abi-7-13")]
+use std::cmp::min;
 use std::ffi::OsStr;
 use std::io;
 use std::path::Path;
 #[cfg(feature = "abi-7-23")]
 use std::time::Duration;
 use std::time::SystemTime;
-use std::{convert::AsRef, io::ErrorKind};
 
+use libc::{c_int, ENOSYS, EPERM};
+use log::{debug, warn};
+#[cfg(feature = "serializable")]
+use serde::{Deserialize, Serialize};
+
+pub use ll::{fuse_abi::consts, TimeOrNow};
 use ll::fuse_abi::consts::*;
 #[cfg(feature = "abi-7-16")]
 pub use ll::fuse_abi::fuse_forget_one;
 pub use ll::fuse_abi::FUSE_ROOT_ID;
-pub use ll::{fuse_abi::consts, TimeOrNow};
 use mnt::mount_options::check_option_conflicts;
 pub use mnt::mount_options::MountOption;
-#[cfg(target_os = "macos")]
-pub use reply::ReplyXTimes;
-pub use reply::ReplyXattr;
+use mnt::mount_options::parse_options_from_args;
 pub use reply::{Reply, ReplyAttr, ReplyData, ReplyEmpty, ReplyEntry, ReplyOpen};
 pub use reply::{
     ReplyBmap, ReplyCreate, ReplyDirectory, ReplyDirectoryPlus, ReplyIoctl, ReplyLock, ReplyLseek,
     ReplyStatfs, ReplyWrite,
 };
+pub use reply::ReplyXattr;
+#[cfg(target_os = "macos")]
+pub use reply::ReplyXTimes;
 pub use request::Request;
-use session::MAX_WRITE_SIZE;
 pub use session::{BackgroundSession, Session};
-#[cfg(feature = "abi-7-28")]
-use std::cmp::max;
-#[cfg(feature = "abi-7-13")]
-use std::cmp::min;
+use session::MAX_WRITE_SIZE;
 
 mod channel;
 mod ll;
@@ -173,6 +174,7 @@ impl KernelConfig {
     /// Must be a power of 10 nanoseconds. i.e. 1s, 0.1s, 0.01s, 1ms, 0.1ms...etc
     ///
     /// On success returns the previous value. On error returns the nearest value which will succeed
+    #[allow(dead_code)]
     #[cfg(feature = "abi-7-23")]
     pub fn set_time_granularity(&mut self, value: Duration) -> Result<Duration, Duration> {
         if value.as_nanos() == 0 {
@@ -242,6 +244,7 @@ impl KernelConfig {
     ///
     /// On success returns the previous value. On error returns the nearest value which will succeed
     #[cfg(feature = "abi-7-13")]
+    #[allow(dead_code)]
     pub fn set_max_background(&mut self, value: u16) -> Result<u16, u16> {
         if value == 0 {
             return Err(1);
@@ -256,6 +259,7 @@ impl KernelConfig {
     ///
     /// On success returns the previous value. On error returns the nearest value which will succeed
     #[cfg(feature = "abi-7-13")]
+    #[allow(dead_code)]
     pub fn set_congestion_threshold(&mut self, value: u16) -> Result<u16, u16> {
         if value == 0 {
             return Err(1);

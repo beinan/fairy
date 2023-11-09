@@ -1,18 +1,19 @@
-use super::reply::reply_attr::ReplyAttr;
-use super::reply::reply_data::{ReplyData, ReplyEmpty};
-use super::reply::reply_ops::{ReplyOpen, ReplyWrite, ReplyDirectory, ReplyDirectoryPlus, ReplyStatfs, ReplyXattr, ReplyCreate, ReplyLock, ReplyBmap, ReplyIoctl, ReplyLseek};
-#[cfg(target_os = "macos")]
-use super::reply::reply_ops::ReplyXTimes;
-use super::{request::Request, TimeOrNow};
-use super::reply::reply_entry::ReplyEntry;
-use super::KernelConfig;
-use super::low_level::kernel_interface::fuse_forget_one;
-
-use libc::{c_int, ENOSYS, EPERM};
 use std::ffi::OsStr;
 use std::path::Path;
 use std::time::SystemTime;
+
+use libc::{c_int, ENOSYS, EPERM};
 use log::{debug, warn};
+
+use super::{request::Request, TimeOrNow};
+use super::KernelConfig;
+use super::low_level::kernel_interface::fuse_forget_one;
+use super::reply::reply_attr::ReplyAttr;
+use super::reply::reply_data::{ReplyData, ReplyEmpty};
+use super::reply::reply_entry::ReplyEntry;
+use super::reply::reply_ops::{ReplyBmap, ReplyCreate, ReplyDirectory, ReplyDirectoryPlus, ReplyIoctl, ReplyLock, ReplyLseek, ReplyOpen, ReplyStatfs, ReplyWrite, ReplyXattr};
+#[cfg(target_os = "macos")]
+use super::reply::reply_ops::ReplyXTimes;
 
 pub trait Filesystem {
     /// Initialize filesystem.
