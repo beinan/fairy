@@ -1,18 +1,15 @@
+use std::error::Error;
+use std::time::Duration;
+
+use lazy_static::lazy_static;
+use log::{error, info, trace};
 use prometheus::{
     labels, register_counter, register_histogram, register_int_counter_vec, register_int_gauge,
 };
 use prometheus::{Counter, Histogram, IntCounterVec, IntGauge, Opts, Registry};
-
-use lazy_static::lazy_static;
-
-use std::error::Error;
-
-use log::{error, info, trace};
+use tokio::time::sleep;
 
 use crate::settings::SETTINGS;
-
-use std::time::Duration;
-use tokio::time::sleep;
 
 lazy_static! {
     pub static ref REGISTRY: Registry = Registry::new();

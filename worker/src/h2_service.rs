@@ -1,11 +1,10 @@
 use bytes::Bytes;
-use h2::server::SendResponse;
 use h2::RecvStream;
+use h2::server::SendResponse;
 use http::Request;
+use monoio::fs::File;
 use monoio::net::{TcpListener, TcpStream};
 use monoio_compat::StreamWrapper;
-
-use monoio::fs::File;
 
 pub async fn serve_h2(addr: String) {
     let listener = TcpListener::bind(addr).unwrap();

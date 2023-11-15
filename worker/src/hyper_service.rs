@@ -2,8 +2,11 @@ use std::net::SocketAddr;
 
 use futures::Future;
 use hyper::{server::conn::Http, service::service_fn};
+use hyper::{Body, Method, Request, Response, StatusCode};
 use monoio::net::TcpListener;
 use monoio_compat::TcpStreamCompat;
+
+use fairy_common::metrics::metrics_result;
 
 #[derive(Clone)]
 struct HyperExecutor;
@@ -35,10 +38,6 @@ where
         );
     }
 }
-
-use hyper::{Body, Method, Request, Response, StatusCode};
-
-use fairy_common::metrics::metrics_result;
 
 pub(crate) async fn hyper_handler(
     req: Request<Body>,

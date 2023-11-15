@@ -1,7 +1,8 @@
-use bytes::Bytes;
-use log::trace;
 use std::error::Error;
 use std::io::ErrorKind;
+
+use bytes::Bytes;
+use log::trace;
 
 use crate::kv_store::Key;
 use crate::settings::local_kv_options::LocalFileKVStoreOptions;

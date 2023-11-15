@@ -1,26 +1,21 @@
 use anyhow::Result;
+use lazy_static::lazy_static;
+use log::{error, info};
 use monoio::io::{AsyncReadRent, AsyncWriteRentExt};
 use monoio::join;
 use monoio::net::{TcpListener, TcpStream};
+
+use fairy_common::kv_store::local_kv_store::local_file_kv_store::LocalFileKVStore;
+use fairy_common::metrics::{INCOMING_REQUESTS, RESPONSE_TIME_COLLECTOR};
+use fairy_common::settings;
+use hyper_service::{hyper_handler, serve_http};
+use service_registry::etcd::{ServiceRegistry, ServiceRegistryError};
+use settings::SETTINGS;
+
 pub mod h2_service;
 pub mod hyper_service;
 
-use fairy_common::settings;
-
-use fairy_common::metrics::{INCOMING_REQUESTS, RESPONSE_TIME_COLLECTOR};
-use hyper_service::{hyper_handler, serve_http};
-
-use settings::SETTINGS;
-
 mod service_registry;
-
-use service_registry::etcd::{ServiceRegistry, ServiceRegistryError};
-
-use lazy_static::lazy_static;
-
-use log::{error, info};
-
-use fairy_common::kv_store::local_kv_store::local_file_kv_store::LocalFileKVStore;
 
 lazy_static! {
     static ref KV_STORE: LocalFileKVStore =
