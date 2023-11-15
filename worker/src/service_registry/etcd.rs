@@ -1,12 +1,13 @@
 // service_registry.rs
 
+use std::sync::{Arc, RwLock};
+
 use etcd_client::{Client, GetOptions, PutOptions};
 use log::{debug, error, info};
-use std::sync::{Arc, RwLock};
+use thiserror::Error;
 use tokio::time;
 
 use crate::settings::SETTINGS;
-use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ServiceRegistryError {

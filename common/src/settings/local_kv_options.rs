@@ -1,8 +1,8 @@
-use crate::settings::FromConfig;
 use config::Config;
-
 use log::info;
 use serde::Deserialize;
+
+use crate::settings::FromConfig;
 
 #[derive(Clone, Debug)]
 #[allow(unused)]
