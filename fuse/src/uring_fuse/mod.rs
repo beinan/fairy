@@ -30,7 +30,7 @@ where
 #[cfg(all(not(target_os = "macos"), not(feature = "abi-7-10")))]
 const INIT_FLAGS: u32 = FUSE_ASYNC_READ;
 #[cfg(all(not(target_os = "macos"), feature = "abi-7-10"))]
-const INIT_FLAGS: u32 = FUSE_ASYNC_READ | FUSE_BIG_WRITES;
+const INIT_FLAGS: u32 = FUSE_ASYNC_READ | FUSE_BIG_WRITES | FUSE_SPLICE_WRITE | FUSE_SPLICE_READ | FUSE_SPLICE_MOVE;
 // TODO: Add FUSE_EXPORT_SUPPORT
 
 /// On macOS, we additionally support case insensitiveness, volume renames and xtimes
