@@ -4,6 +4,7 @@ members = [
     "worker",
     "client",
     "fuse",
+    "runtime",
 ]
 
 resolver = "2"
