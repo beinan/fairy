@@ -88,8 +88,8 @@ pub mod tests {
 
     use zerocopy::FromBytes;
 
-    use super::*;
     use super::super::test::AlignedData;
+    use super::*;
 
     const TEST_DATA: AlignedData<[u8; 10]> =
         AlignedData([0x66, 0x6f, 0x6f, 0x00, 0x62, 0x61, 0x72, 0x00, 0x62, 0x61]);

@@ -9,7 +9,7 @@ use std::{
 
 use log::warn;
 
-use super::{MountOption, with_fuse_args};
+use super::{with_fuse_args, MountOption};
 
 /// Ensures that an os error is never 0/Success
 fn ensure_last_os_error() -> io::Error {

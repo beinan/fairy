@@ -4,7 +4,6 @@
 //! advantage of Rust's architecture. The only thing we rely on in the real libfuse are mount
 //! and unmount calls which are needed to establish a fd to talk to the kernel driver.
 
-use std::{convert::AsRef, io::ErrorKind};
 #[cfg(feature = "abi-7-28")]
 use std::cmp::max;
 #[cfg(feature = "abi-7-13")]
@@ -15,31 +14,32 @@ use std::path::Path;
 #[cfg(feature = "abi-7-23")]
 use std::time::Duration;
 use std::time::SystemTime;
+use std::{convert::AsRef, io::ErrorKind};
 
 use libc::{c_int, ENOSYS, EPERM};
 use log::{debug, warn};
 #[cfg(feature = "serializable")]
 use serde::{Deserialize, Serialize};
 
-pub use ll::{fuse_abi::consts, TimeOrNow};
 use ll::fuse_abi::consts::*;
 #[cfg(feature = "abi-7-16")]
 pub use ll::fuse_abi::fuse_forget_one;
 pub use ll::fuse_abi::FUSE_ROOT_ID;
+pub use ll::{fuse_abi::consts, TimeOrNow};
 use mnt::mount_options::check_option_conflicts;
-pub use mnt::mount_options::MountOption;
 use mnt::mount_options::parse_options_from_args;
+pub use mnt::mount_options::MountOption;
+#[cfg(target_os = "macos")]
+pub use reply::ReplyXTimes;
+pub use reply::ReplyXattr;
 pub use reply::{Reply, ReplyAttr, ReplyData, ReplyEmpty, ReplyEntry, ReplyOpen};
 pub use reply::{
     ReplyBmap, ReplyCreate, ReplyDirectory, ReplyDirectoryPlus, ReplyIoctl, ReplyLock, ReplyLseek,
     ReplyStatfs, ReplyWrite,
 };
-pub use reply::ReplyXattr;
-#[cfg(target_os = "macos")]
-pub use reply::ReplyXTimes;
 pub use request::Request;
-pub use session::{BackgroundSession, Session};
 use session::MAX_WRITE_SIZE;
+pub use session::{BackgroundSession, Session};
 
 mod channel;
 mod ll;

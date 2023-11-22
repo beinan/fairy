@@ -10,8 +10,11 @@ use zerocopy::AsBytes;
 
 use crate::uring_fuse::file_meta::{FileAttr, FileType};
 
-use super::{kernel_interface::{fuse_attr, fuse_dirent, fuse_direntplus, fuse_entry_out}, response::Response};
 use super::response::ResponseBuf;
+use super::{
+    kernel_interface::{fuse_attr, fuse_dirent, fuse_direntplus, fuse_entry_out},
+    response::Response,
+};
 
 /// Returns a fuse_attr from FileAttr
 pub(crate) fn fuse_attr_from_attr(attr: &FileAttr) -> fuse_attr {
@@ -177,7 +180,7 @@ impl DirEntList {
     pub fn push<T: AsRef<Path>>(&mut self, ent: &DirEntry<T>) -> bool {
         let name = ent.name.as_ref().as_os_str().as_bytes();
         let header = fuse_dirent {
-            ino: ent.ino.into(),
+            ino: ent.ino,
             off: ent.offset.0,
             namelen: name.len().try_into().expect("Name too long"),
             typ: mode_from_kind_and_perm(ent.kind, 0) >> 12,
@@ -246,7 +249,7 @@ impl DirEntPlusList {
         let header = fuse_direntplus {
             entry_out: fuse_entry_out {
                 nodeid: x.attr.attr.ino,
-                generation: x.generation.into(),
+                generation: x.generation,
                 entry_valid: x.entry_valid.as_secs(),
                 attr_valid: x.attr_valid.as_secs(),
                 entry_valid_nsec: x.entry_valid.subsec_nanos(),

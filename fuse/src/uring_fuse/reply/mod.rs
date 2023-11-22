@@ -11,7 +11,6 @@ pub trait Reply {
     fn new<S: ReplySender>(unique: u64, sender: S) -> Self;
 }
 
-
 pub trait ReplySender: Send + Sync + Unpin + 'static {
     /// Send data.
     fn send(&self, data: &[IoSlice<'_>]) -> std::io::Result<()>;

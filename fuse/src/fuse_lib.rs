@@ -22,12 +22,18 @@ impl crate::fuser::Filesystem for FairyFS {}
 pub fn uring_mount(mountpoint: &Path) {
     uring_fuse::mount(
         UringFilesystem::new(InodeManager::new(""), ListStatusCache::new()),
-        mountpoint
-    ).unwrap();
+        mountpoint,
+    )
+    .unwrap();
 }
 
 pub fn mount(mountpoint: &Path) {
-    fuser::mount2(FairyFS, mountpoint, &[crate::fuser::MountOption::AutoUnmount]).unwrap();
+    fuser::mount2(
+        FairyFS,
+        mountpoint,
+        &[crate::fuser::MountOption::AutoUnmount],
+    )
+    .unwrap();
 }
 
 pub fn mount_passthrough(mountpoint: &Path, source: &Path) {
@@ -37,5 +43,10 @@ pub fn mount_passthrough(mountpoint: &Path, source: &Path) {
 
     let fuse_args = [OsStr::new("-o"), OsStr::new("fsname=passthrufs")];
 
-    async_fuse::mount(crate::async_fuse::fusemt::FuseMT::new(filesystem, 1), mountpoint, &fuse_args[..]).unwrap();
+    async_fuse::mount(
+        crate::async_fuse::fusemt::FuseMT::new(filesystem, 1),
+        mountpoint,
+        &fuse_args[..],
+    )
+    .unwrap();
 }

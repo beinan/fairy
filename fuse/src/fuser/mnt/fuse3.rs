@@ -8,11 +8,11 @@ use std::{
     sync::Arc,
 };
 
-use super::{MountOption, with_fuse_args};
 use super::fuse3_sys::{
     fuse_session_destroy, fuse_session_fd, fuse_session_mount, fuse_session_new,
     fuse_session_unmount,
 };
+use super::{with_fuse_args, MountOption};
 
 /// Ensures that an os error is never 0/Success
 fn ensure_last_os_error() -> io::Error {

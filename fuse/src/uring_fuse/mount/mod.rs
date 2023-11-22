@@ -1,5 +1,5 @@
-use std::{fs::File, io};
 use std::ffi::CStr;
+use std::{fs::File, io};
 
 pub use fuse_pure::Mount;
 pub use mount_options::MountOption;
@@ -9,8 +9,6 @@ pub mod mount_options;
 
 #[inline]
 fn libc_umount(mnt: &CStr) -> io::Result<()> {
-
-
     #[cfg(any(
         target_os = "macos",
         target_os = "freebsd",

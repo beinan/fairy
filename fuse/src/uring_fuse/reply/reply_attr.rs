@@ -5,8 +5,8 @@ use libc::c_int;
 use crate::uring_fuse::file_meta::FileAttr;
 use crate::uring_fuse::low_level::response::Response;
 
-use super::Reply;
 use super::reply_raw::ReplyRaw;
+use super::Reply;
 use super::ReplySender;
 
 pub struct ReplyAttr {
@@ -24,8 +24,7 @@ impl Reply for ReplyAttr {
 impl ReplyAttr {
     /// Reply to a request with the given attribute
     pub fn attr(self, ttl: &Duration, attr: &FileAttr) {
-        self.reply
-            .send_ll(&Response::new_attr(ttl, &attr.into()));
+        self.reply.send_ll(&Response::new_attr(ttl, &attr.into()));
     }
 
     /// Reply to a request with the given error code

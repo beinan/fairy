@@ -17,16 +17,16 @@ use std::time::SystemTime;
 use libc::c_int;
 use log::{error, warn};
 
-use super::{FileAttr, FileType};
 use super::ll::{
     self,
-    Generation,
     reply::{DirEntPlusList, DirEntryPlus},
+    Generation,
 };
 use super::ll::{
-    INodeNo,
     reply::{DirEntList, DirEntOffset, DirEntry},
+    INodeNo,
 };
+use super::{FileAttr, FileType};
 
 /// Generic reply callback to send data
 pub trait ReplySender: Send + Sync + Unpin + 'static {

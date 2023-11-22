@@ -16,7 +16,7 @@ impl Reply for ReplyRaw {
     fn new<S: ReplySender>(unique: u64, sender: S) -> ReplyRaw {
         let sender = Box::new(sender);
         ReplyRaw {
-            unique: unique,
+            unique,
             sender: Some(sender),
         }
     }
@@ -25,7 +25,7 @@ impl Reply for ReplyRaw {
 impl ReplyRaw {
     /// Reply to a request with the given error code and data. Must be called
     /// only once (the `ok` and `error` methods ensure this by consuming `self`)
-    pub (super) fn send_ll_mut(&mut self, response: &Response<'_>) {
+    pub(super) fn send_ll_mut(&mut self, response: &Response<'_>) {
         assert!(self.sender.is_some());
         let sender = self.sender.take().unwrap();
         let res = response.with_iovec(self.unique, |iov| sender.send(iov));
@@ -33,7 +33,7 @@ impl ReplyRaw {
             error!("Failed to send FUSE reply: {}", err);
         }
     }
-    pub (super) fn send_ll(mut self, response: &Response<'_>) {
+    pub(super) fn send_ll(mut self, response: &Response<'_>) {
         self.send_ll_mut(response)
     }
 

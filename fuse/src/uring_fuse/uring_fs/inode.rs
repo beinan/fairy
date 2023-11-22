@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{Arc, RwLock};
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, RwLock};
 use std::time::UNIX_EPOCH;
 
 use thiserror::Error;
@@ -36,10 +36,12 @@ impl InodeManager {
             path_index: RwLock::new(path_indexes),
             next_ino: AtomicU64::new(2),
         };
-        Self { inner: Arc::new(inner) }
+        Self {
+            inner: Arc::new(inner),
+        }
     }
 
-    pub fn get(&self, ino: u64) -> Result<Inode, InodeError>{
+    pub fn get(&self, ino: u64) -> Result<Inode, InodeError> {
         self.inner.get(ino)
     }
 
@@ -47,7 +49,13 @@ impl InodeManager {
         self.inner.lookup(parent_ino, name)
     }
 
-    pub fn create(&self, parent: u64, name: String, full_path: String, kind: FileType) -> Result<Inode, InodeError>{
+    pub fn create(
+        &self,
+        parent: u64,
+        name: String,
+        full_path: String,
+        kind: FileType,
+    ) -> Result<Inode, InodeError> {
         self.inner.create(parent, name, full_path, kind)
     }
 }
@@ -80,8 +88,17 @@ impl InodeManagerInner {
             .get(&parent_ino)
             .cloned()
             .ok_or(InodeError::InodeDoesNotExist(parent_ino))?;
-        let full_path = PathBuf::from(parent_inode.full_path()).join(name).into_os_string().into_string().unwrap();
-        let ino = *self.path_index.read().unwrap().get(full_path.as_str()).ok_or(InodeError::InodeDoesNotExist(parent_ino))?;
+        let full_path = PathBuf::from(parent_inode.full_path())
+            .join(name)
+            .into_os_string()
+            .into_string()
+            .unwrap();
+        let ino = *self
+            .path_index
+            .read()
+            .unwrap()
+            .get(full_path.as_str())
+            .ok_or(InodeError::InodeDoesNotExist(parent_ino))?;
         let inode = self
             .inodes
             .read()
@@ -92,17 +109,23 @@ impl InodeManagerInner {
         Ok(inode)
     }
 
-    pub fn create(&self, parent: InodeNo, name: String, full_path: String, kind: FileType) -> Result<Inode, InodeError>{
+    pub fn create(
+        &self,
+        parent: InodeNo,
+        name: String,
+        full_path: String,
+        kind: FileType,
+    ) -> Result<Inode, InodeError> {
         let inode_id_new = self.next_ino.fetch_add(1, Ordering::SeqCst);
-        let inode_new = Inode::new(
-            inode_id_new,
-            parent,
-            name,
-            full_path.clone(),
-            kind,
-        );
-        self.inodes.write().unwrap().insert(inode_id_new, inode_new.clone());
-        self.path_index.write().unwrap().insert(full_path, inode_id_new);
+        let inode_new = Inode::new(inode_id_new, parent, name, full_path.clone(), kind);
+        self.inodes
+            .write()
+            .unwrap()
+            .insert(inode_id_new, inode_new.clone());
+        self.path_index
+            .write()
+            .unwrap()
+            .insert(full_path, inode_id_new);
         Ok(inode_new)
     }
 }
@@ -142,7 +165,7 @@ impl Inode {
         self.inner.kind
     }
 
-    fn new(ino: InodeNo, parent: InodeNo, name: String, full_path: String, kind: FileType,) -> Self {
+    fn new(ino: InodeNo, parent: InodeNo, name: String, full_path: String, kind: FileType) -> Self {
         let inner = InodeInner {
             ino,
             parent,
@@ -150,21 +173,23 @@ impl Inode {
             full_path,
             kind,
         };
-        Self { inner: inner.into() }
+        Self {
+            inner: inner.into(),
+        }
     }
 }
 
-impl Into<FileAttr> for Inode {
-    fn into(self) -> FileAttr {
+impl From<Inode> for FileAttr {
+    fn from(value: Inode) -> Self {
         FileAttr {
-            ino: self.ino(),
+            ino: value.ino(),
             size: 0,
             blocks: 0,
             atime: UNIX_EPOCH,
             mtime: UNIX_EPOCH,
             ctime: UNIX_EPOCH,
             crtime: UNIX_EPOCH,
-            kind: self.kind(),
+            kind: value.kind(),
             perm: 0o555,
             nlink: 2,
             uid: 0,

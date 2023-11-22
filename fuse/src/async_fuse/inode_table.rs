@@ -5,8 +5,8 @@
 
 use std::borrow::Borrow;
 use std::cmp::{Eq, PartialEq};
-use std::collections::{HashMap, VecDeque};
 use std::collections::hash_map::Entry::*;
+use std::collections::{HashMap, VecDeque};
 use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

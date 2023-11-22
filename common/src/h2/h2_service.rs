@@ -1,6 +1,6 @@
 use bytes::Bytes;
-use h2::RecvStream;
 use h2::server::SendResponse;
+use h2::RecvStream;
 use http::Request;
 use log::{debug, error};
 use monoio::net::{TcpListener, TcpStream};

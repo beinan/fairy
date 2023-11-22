@@ -5,15 +5,18 @@ use std::time::SystemTime;
 use libc::{c_int, ENOSYS, EPERM};
 use log::{debug, warn};
 
-use super::{request::Request, TimeOrNow};
-use super::KernelConfig;
 use super::low_level::kernel_interface::fuse_forget_one;
 use super::reply::reply_attr::ReplyAttr;
 use super::reply::reply_data::{ReplyData, ReplyEmpty};
 use super::reply::reply_entry::ReplyEntry;
-use super::reply::reply_ops::{ReplyBmap, ReplyCreate, ReplyDirectory, ReplyDirectoryPlus, ReplyIoctl, ReplyLock, ReplyLseek, ReplyOpen, ReplyStatfs, ReplyWrite, ReplyXattr};
 #[cfg(target_os = "macos")]
 use super::reply::reply_ops::ReplyXTimes;
+use super::reply::reply_ops::{
+    ReplyBmap, ReplyCreate, ReplyDirectory, ReplyDirectoryPlus, ReplyIoctl, ReplyLock, ReplyLseek,
+    ReplyOpen, ReplyStatfs, ReplyWrite, ReplyXattr,
+};
+use super::KernelConfig;
+use super::{request::Request, TimeOrNow};
 
 pub trait Filesystem {
     /// Initialize filesystem.
@@ -61,6 +64,7 @@ pub trait Filesystem {
     }
 
     /// Set file attributes.
+    #[allow(clippy::too_many_arguments)]
     fn setattr(
         &mut self,
         _req: &Request<'_>,
@@ -95,6 +99,7 @@ pub trait Filesystem {
 
     /// Create file node.
     /// Create a regular file, character device, block device, fifo or socket node.
+    #[allow(clippy::too_many_arguments)]
     fn mknod(
         &mut self,
         _req: &Request<'_>,
@@ -165,6 +170,7 @@ pub trait Filesystem {
     }
 
     /// Rename a file.
+    #[allow(clippy::too_many_arguments)]
     fn rename(
         &mut self,
         _req: &Request<'_>,
@@ -221,6 +227,7 @@ pub trait Filesystem {
     ///
     /// flags: these are the file flags, such as O_SYNC. Only supported with ABI >= 7.9
     /// lock_owner: only supported with ABI >= 7.9
+    #[allow(clippy::too_many_arguments)]
     fn read(
         &mut self,
         _req: &Request<'_>,
@@ -252,6 +259,7 @@ pub trait Filesystem {
     /// is disabled
     /// flags: these are the file flags, such as O_SYNC. Only supported with ABI >= 7.9
     /// lock_owner: only supported with ABI >= 7.9
+    #[allow(clippy::too_many_arguments)]
     fn write(
         &mut self,
         _req: &Request<'_>,
@@ -304,6 +312,7 @@ pub trait Filesystem {
     /// the release. fh will contain the value set by the open method, or will be undefined
     /// if the open method didn't set any value. flags will contain the same flags as for
     /// open.
+    #[allow(clippy::too_many_arguments)]
     fn release(
         &mut self,
         _req: &Request<'_>,
@@ -419,6 +428,7 @@ pub trait Filesystem {
     }
 
     /// Set an extended attribute.
+    #[allow(clippy::too_many_arguments)]
     fn setxattr(
         &mut self,
         _req: &Request<'_>,
@@ -495,6 +505,7 @@ pub trait Filesystem {
     /// structure in <fuse_common.h> for more details. If this method is not
     /// implemented or under Linux kernel versions earlier than 2.6.15, the mknod()
     /// and open() methods will be called instead.
+    #[allow(clippy::too_many_arguments)]
     fn create(
         &mut self,
         _req: &Request<'_>,
@@ -514,6 +525,7 @@ pub trait Filesystem {
     }
 
     /// Test for a POSIX file lock.
+    #[allow(clippy::too_many_arguments)]
     fn getlk(
         &mut self,
         _req: &Request<'_>,
@@ -541,6 +553,7 @@ pub trait Filesystem {
     /// used to fill in this field in getlk(). Note: if the locking methods are not
     /// implemented, the kernel will still allow file locking to work locally.
     /// Hence these are only interesting for network filesystems and similar.
+    #[allow(clippy::too_many_arguments)]
     fn setlk(
         &mut self,
         _req: &Request<'_>,
@@ -574,6 +587,7 @@ pub trait Filesystem {
     }
 
     /// control device
+    #[allow(clippy::too_many_arguments)]
     fn ioctl(
         &mut self,
         _req: &Request<'_>,
@@ -599,6 +613,7 @@ pub trait Filesystem {
     }
 
     /// Preallocate or deallocate space to a file
+    #[allow(clippy::too_many_arguments)]
     fn fallocate(
         &mut self,
         _req: &Request<'_>,
@@ -635,6 +650,7 @@ pub trait Filesystem {
     }
 
     /// Copy the specified range from the source inode to the destination inode
+    #[allow(clippy::too_many_arguments)]
     fn copy_file_range(
         &mut self,
         _req: &Request<'_>,

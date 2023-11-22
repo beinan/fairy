@@ -12,9 +12,9 @@ use crate::uring_fuse::reply::reply_attr::ReplyAttr;
 use crate::uring_fuse::reply::reply_entry::ReplyEntry;
 use crate::uring_fuse::reply::reply_ops::{ReplyCreate, ReplyDirectory, ReplyWrite};
 use crate::uring_fuse::request::Request;
-use crate::uring_fuse::TimeOrNow;
 use crate::uring_fuse::uring_fs::inode::InodeManager;
 use crate::uring_fuse::uring_fs::list_cache::ListStatusCache;
+use crate::uring_fuse::TimeOrNow;
 
 pub mod inode;
 pub mod list_cache;
@@ -39,13 +39,10 @@ impl Filesystem for UringFilesystem {
     fn lookup(&mut self, _req: &Request<'_>, parent: u64, name: &OsStr, reply: ReplyEntry) {
         // Convert OsStr to String safely
         match name.to_os_string().into_string() {
-            Ok(name_str) => {
-                match self.inode_manager.lookup(parent, &name_str) {
-                    Ok(inode) => reply.entry(
-                        &Duration::from_millis(100000), &inode.into(), 0),
-                    Err(_) => reply.error(ENOENT),
-                }
-            }
+            Ok(name_str) => match self.inode_manager.lookup(parent, &name_str) {
+                Ok(inode) => reply.entry(&Duration::from_millis(100000), &inode.into(), 0),
+                Err(_) => reply.error(ENOENT),
+            },
             Err(_) => {
                 // Handle the case where `name` cannot be converted to a String.
                 // ENOENT is used here to indicate that the entry is not present.
@@ -56,7 +53,7 @@ impl Filesystem for UringFilesystem {
     fn getattr(&mut self, _req: &Request, ino: u64, reply: ReplyAttr) {
         match self.inode_manager.get(ino) {
             Ok(inode) => reply.attr(&Duration::from_millis(100000), &inode.into()),
-            Err(_) => reply.error(ENOENT)
+            Err(_) => reply.error(ENOENT),
         }
     }
 
@@ -83,7 +80,10 @@ impl Filesystem for UringFilesystem {
             gid: {:?}, size: {:?}, fh: {:?}, flags: {:?})",
             ino, mode, uid, gid, size, fh, flags
         );
-        reply.attr(&Duration::from_millis(1000000), &self.inode_manager.get(ino).unwrap().into());
+        reply.attr(
+            &Duration::from_millis(1000000),
+            &self.inode_manager.get(ino).unwrap().into(),
+        );
     }
 
     fn write(
@@ -124,8 +124,7 @@ impl Filesystem for UringFilesystem {
         if let Ok(dir_inode) = self.inode_manager.get(ino) {
             let mut entry_count = 0;
             if offset == 0 {
-                let _ = reply.add(ino, 1,
-                                  FileType::Directory, ".");
+                let _ = reply.add(ino, 1, FileType::Directory, ".");
                 entry_count += 1;
             }
 
@@ -135,8 +134,12 @@ impl Filesystem for UringFilesystem {
                     match self.inode_manager.lookup(ino, entry) {
                         Ok(entry_inode) => {
                             // Cast i to i64 to match the offset type.
-                            let _ = reply.add(entry_inode.ino(), (i as i64) + offset + 2,
-                                              entry_inode.kind(), &entry_inode.name());
+                            let _ = reply.add(
+                                entry_inode.ino(),
+                                (i as i64) + offset + 2,
+                                entry_inode.kind(),
+                                entry_inode.name(),
+                            );
                             entry_count += 1;
                         }
                         Err(_) => {
@@ -178,25 +181,35 @@ impl Filesystem for UringFilesystem {
         );
         match self.inode_manager.get(parent) {
             Ok(parent_node) => {
-                let full_path = PathBuf::from(parent_node.full_path()).join(name)
-                    .into_os_string().into_string().unwrap();
-                match self.inode_manager.create(parent,
-                                                name.to_os_string().into_string().unwrap(),
-                                                full_path,
-                                                FileType::RegularFile) {
+                let full_path = PathBuf::from(parent_node.full_path())
+                    .join(name)
+                    .into_os_string()
+                    .into_string()
+                    .unwrap();
+                match self.inode_manager.create(
+                    parent,
+                    name.to_os_string().into_string().unwrap(),
+                    full_path,
+                    FileType::RegularFile,
+                ) {
                     Ok(inode) => {
                         let ino = inode.ino();
-                        self.ls_cache.append(String::from(parent_node.full_path()), name.to_os_string().into_string().unwrap());
-                        reply.created(&Duration::from_millis(1000000),
-                                      &inode.into(),
-                                      ino,
-                                      self.next_fh.fetch_add(1, Ordering::Relaxed),
-                                      0)
+                        self.ls_cache.append(
+                            String::from(parent_node.full_path()),
+                            name.to_os_string().into_string().unwrap(),
+                        );
+                        reply.created(
+                            &Duration::from_millis(1000000),
+                            &inode.into(),
+                            ino,
+                            self.next_fh.fetch_add(1, Ordering::Relaxed),
+                            0,
+                        )
                     }
-                    Err(_) => reply.error(ENOENT)
+                    Err(_) => reply.error(ENOENT),
                 }
             }
-            Err(_) => reply.error(ENOENT)
+            Err(_) => reply.error(ENOENT),
         }
     }
 }
