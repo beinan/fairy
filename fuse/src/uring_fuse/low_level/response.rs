@@ -1,14 +1,14 @@
-use std::{
-    convert::TryInto,
-    io::IoSlice,
-    mem::size_of,
-    time::Duration,
-};
+use std::{convert::TryInto, io::IoSlice, mem::size_of, time::Duration};
 
 use smallvec::{smallvec, SmallVec};
 use zerocopy::AsBytes;
 
-use super::{errno::Errno, file_meta::{Attr, EntListBuf}, kernel_interface as abi, lock::Lock};
+use super::{
+    errno::Errno,
+    file_meta::{Attr, EntListBuf},
+    kernel_interface as abi,
+    lock::Lock,
+};
 
 const INLINE_DATA_THRESHOLD: usize = size_of::<u64>() * 4;
 pub(crate) type ResponseBuf = SmallVec<[u8; INLINE_DATA_THRESHOLD]>;
@@ -21,18 +21,14 @@ pub enum Response<'a> {
 
 #[allow(dead_code)]
 impl<'a> Response<'a> {
-    pub(crate) fn with_iovec<F: FnOnce(&[IoSlice<'_>]) -> T, T>(
-        &self,
-        unique: u64,
-        f: F,
-    ) -> T {
+    pub(crate) fn with_iovec<F: FnOnce(&[IoSlice<'_>]) -> T, T>(&self, unique: u64, f: F) -> T {
         let datalen = match &self {
             Response::Error(_) => 0,
             Response::Data(v) => v.len(),
             Response::Slice(d) => d.len(),
         };
         let header = abi::fuse_out_header {
-            unique: unique,
+            unique,
             error: if let Response::Error(errno) = self {
                 -errno
             } else {
@@ -80,8 +76,8 @@ impl<'a> Response<'a> {
         entry_ttl: Duration,
     ) -> Self {
         let d = abi::fuse_entry_out {
-            nodeid: ino.into(),
-            generation: generation.into(),
+            nodeid: ino,
+            generation,
             entry_valid: entry_ttl.as_secs(),
             attr_valid: attr_ttl.as_secs(),
             entry_valid_nsec: entry_ttl.subsec_nanos(),
@@ -104,7 +100,6 @@ impl<'a> Response<'a> {
     #[cfg(target_os = "macos")]
     pub(crate) fn new_xtimes(bkuptime: SystemTime, crtime: SystemTime) -> Self {
         use super::file_meta::time_from_system_time;
-
 
         let (bkuptime_secs, bkuptime_nanos) = time_from_system_time(&bkuptime);
         let (crtime_secs, crtime_nanos) = time_from_system_time(&crtime);
@@ -191,7 +186,7 @@ impl<'a> Response<'a> {
         let r = abi::fuse_create_out(
             abi::fuse_entry_out {
                 nodeid: attr.attr.ino,
-                generation: generation,
+                generation,
                 entry_valid: ttl.as_secs(),
                 attr_valid: ttl.as_secs(),
                 entry_valid_nsec: ttl.subsec_nanos(),

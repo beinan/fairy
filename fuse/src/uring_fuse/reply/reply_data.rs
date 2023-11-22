@@ -2,7 +2,7 @@ use libc::c_int;
 
 use crate::uring_fuse::low_level::response::Response;
 
-use super::{Reply, reply_raw::ReplyRaw, ReplySender};
+use super::{reply_raw::ReplyRaw, Reply, ReplySender};
 
 ///
 /// Data reply

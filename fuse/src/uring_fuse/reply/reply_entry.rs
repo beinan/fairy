@@ -5,8 +5,8 @@ use libc::c_int;
 use crate::uring_fuse::file_meta::FileAttr;
 use crate::uring_fuse::low_level::response::Response;
 
-use super::Reply;
 use super::reply_raw::ReplyRaw;
+use super::Reply;
 use super::ReplySender;
 
 pub struct ReplyEntry {

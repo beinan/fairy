@@ -1,36 +1,43 @@
-use std::{io, path::Path, time::{Duration, SystemTime}};
+use std::{
+    io,
+    path::Path,
+    time::{Duration, SystemTime},
+};
 
-use self::{filesystem::Filesystem, mount::MountOption, session::Session};
 use self::low_level::consts::*;
 use self::session::MAX_WRITE_SIZE;
+use self::{filesystem::Filesystem, mount::MountOption, session::Session};
 
+mod channel;
 pub mod file_meta;
 pub mod filesystem;
+pub mod mount;
 pub mod reply;
 pub mod request;
-pub mod uring_fs;
 mod session;
-pub mod mount;
-mod channel;
+pub mod uring_fs;
 
 mod low_level;
 
-pub(crate) fn mount<FS, P>(
-    file_system: FS,
-    mountpoint: P
-) -> io::Result<()> 
-where 
+pub(crate) fn mount<FS, P>(file_system: FS, mountpoint: P) -> io::Result<()>
+where
     FS: Filesystem,
-    P: AsRef<Path>, {
-    Session::new(file_system, mountpoint.as_ref(), &[MountOption::AutoUnmount, MountOption::AllowRoot])
-        .and_then(|mut se| se.run())
+    P: AsRef<Path>,
+{
+    Session::new(
+        file_system,
+        mountpoint.as_ref(),
+        &[MountOption::AutoUnmount, MountOption::AllowRoot],
+    )
+    .and_then(|mut se| se.run())
 }
 
 /// We generally support async reads
 #[cfg(all(not(target_os = "macos"), not(feature = "abi-7-10")))]
 const INIT_FLAGS: u32 = FUSE_ASYNC_READ;
 #[cfg(all(not(target_os = "macos"), feature = "abi-7-10"))]
-const INIT_FLAGS: u32 = FUSE_ASYNC_READ | FUSE_BIG_WRITES | FUSE_SPLICE_WRITE | FUSE_SPLICE_READ | FUSE_SPLICE_MOVE;
+const INIT_FLAGS: u32 =
+    FUSE_ASYNC_READ | FUSE_BIG_WRITES | FUSE_SPLICE_WRITE | FUSE_SPLICE_READ | FUSE_SPLICE_MOVE;
 // TODO: Add FUSE_EXPORT_SUPPORT
 
 /// On macOS, we additionally support case insensitiveness, volume renames and xtimes
@@ -206,7 +213,6 @@ impl KernelConfig {
         ((max(self.max_write, self.max_readahead) - 1) / page_size::get() as u32) as u16 + 1
     }
 }
-
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 /// Possible input arguments for atime & mtime, which can either be set to a specified time,

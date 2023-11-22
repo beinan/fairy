@@ -16,11 +16,9 @@ impl ListStatusCache {
         self.cache.get(path)
     }
 
-    pub fn append(&mut self, path: String, new_file: String) -> () {
+    pub fn append(&mut self, path: String, new_file: String) {
         match self.cache.entry(path) {
-            Entry::Occupied(mut entry) => {
-                entry.get_mut().push(new_file)
-            }
+            Entry::Occupied(mut entry) => entry.get_mut().push(new_file),
             Entry::Vacant(entry) => {
                 entry.insert(vec![new_file]);
             }

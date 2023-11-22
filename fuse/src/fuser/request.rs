@@ -12,15 +12,15 @@ use std::path::Path;
 
 use log::{debug, error, warn};
 
-use super::{KernelConfig, ll};
 use super::channel::ChannelSender;
-use super::Filesystem;
-use super::ll::{Errno, fuse_abi as abi, Response};
 use super::ll::Request as _;
-use super::reply::{Reply, ReplyDirectory, ReplySender};
+use super::ll::{fuse_abi as abi, Errno, Response};
 #[cfg(feature = "abi-7-21")]
 use super::reply::ReplyDirectoryPlus;
+use super::reply::{Reply, ReplyDirectory, ReplySender};
 use super::session::{Session, SessionACL};
+use super::Filesystem;
+use super::{ll, KernelConfig};
 
 /// Request data structure
 #[derive(Debug)]

@@ -34,7 +34,6 @@ impl fmt::Display for RequestError {
 
 impl error::Error for RequestError {}
 
-
 pub trait Request: Sized {
     /// Returns the unique identifier of this request.
     ///

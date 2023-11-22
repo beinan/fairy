@@ -2,9 +2,16 @@ use std::{ffi::OsStr, io::IoSlice, time::Duration};
 
 use libc::c_int;
 
-use crate::uring_fuse::{file_meta::{FileAttr, FileType}, low_level::{file_meta::{DirEntList, DirEntOffset, DirEntPlusList, DirEntry, DirEntryPlus}, lock::Lock, response::Response}};
+use crate::uring_fuse::{
+    file_meta::{FileAttr, FileType},
+    low_level::{
+        file_meta::{DirEntList, DirEntOffset, DirEntPlusList, DirEntry, DirEntryPlus},
+        lock::Lock,
+        response::Response,
+    },
+};
 
-use super::{Reply, reply_raw::ReplyRaw, ReplySender};
+use super::{reply_raw::ReplyRaw, Reply, ReplySender};
 
 ///
 /// XTimes Reply
@@ -28,8 +35,7 @@ impl Reply for ReplyXTimes {
 impl ReplyXTimes {
     /// Reply to a request with the given xtimes
     pub fn xtimes(self, bkuptime: SystemTime, crtime: SystemTime) {
-        self.reply
-            .send_ll(&Response::new_xtimes(bkuptime, crtime))
+        self.reply.send_ll(&Response::new_xtimes(bkuptime, crtime))
     }
 
     /// Reply to a request with the given error code
@@ -57,8 +63,7 @@ impl Reply for ReplyOpen {
 impl ReplyOpen {
     /// Reply to a request with the given open result
     pub fn opened(self, fh: u64, flags: u32) {
-        self.reply
-            .send_ll(&Response::new_open(fh, flags))
+        self.reply.send_ll(&Response::new_open(fh, flags))
     }
 
     /// Reply to a request with the given error code
@@ -282,12 +287,8 @@ impl ReplyDirectory {
     #[must_use]
     pub fn add<T: AsRef<OsStr>>(&mut self, ino: u64, offset: i64, kind: FileType, name: T) -> bool {
         let name = name.as_ref();
-        self.data.push(&DirEntry::new(
-            ino,
-            DirEntOffset(offset),
-            kind,
-            name,
-        ))
+        self.data
+            .push(&DirEntry::new(ino, DirEntOffset(offset), kind, name))
     }
 
     /// Reply to a request with the filled directory buffer

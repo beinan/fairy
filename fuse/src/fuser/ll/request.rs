@@ -13,9 +13,9 @@ use op::*;
 
 use crate::fuser::ll::Response;
 
-use super::{Errno, fuse_abi as abi};
 use super::argument::ArgumentIterator;
 use super::fuse_abi::{fuse_in_header, fuse_opcode, InvalidOpcodeError};
+use super::{fuse_abi as abi, Errno};
 
 /// Error that may occur while reading and parsing a request from the kernel driver.
 #[derive(Debug)]
@@ -280,15 +280,15 @@ mod op {
 
     use zerocopy::AsBytes;
 
-    use crate::fuser::KernelConfig;
     use crate::fuser::ll::Response;
+    use crate::fuser::KernelConfig;
 
     use super::{
-        FilenameInDir,
-        Request, super::{argument::ArgumentIterator, TimeOrNow},
+        super::{argument::ArgumentIterator, TimeOrNow},
+        FilenameInDir, Request,
     };
     use super::{
-        abi::*, abi::consts::*, FileHandle, INodeNo, Lock, LockOwner, Operation, RequestId,
+        abi::consts::*, abi::*, FileHandle, INodeNo, Lock, LockOwner, Operation, RequestId,
     };
 
     /// Look up a directory entry by name and get its attributes.
@@ -2172,8 +2172,8 @@ impl<'a> TryFrom<&'a [u8]> for AnyRequest<'a> {
 mod tests {
     use std::ffi::OsStr;
 
-    use super::*;
     use super::super::test::AlignedData;
+    use super::*;
 
     #[cfg(target_endian = "big")]
     const INIT_REQUEST: AlignedData<[u8; 56]> = AlignedData([

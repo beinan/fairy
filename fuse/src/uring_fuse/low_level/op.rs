@@ -4,7 +4,8 @@ use std::{
     fmt::{self, Display},
     mem,
     num::NonZeroU32,
-    path::Path, time::{Duration, SystemTime},
+    path::Path,
+    time::{Duration, SystemTime},
 };
 
 use zerocopy::AsBytes;
@@ -12,8 +13,8 @@ use zerocopy::AsBytes;
 use crate::uring_fuse::{KernelConfig, TimeOrNow};
 
 use super::argument::ArgumentIterator;
-use super::kernel_interface::*;
 use super::kernel_interface::consts::*;
+use super::kernel_interface::*;
 use super::lock::Lock;
 use super::lock::LockOwner;
 use super::operation::Operation;
@@ -25,7 +26,7 @@ macro_rules! impl_request {
         impl<'a> Request for $structname {
             #[inline]
             fn unique(&self) -> u64 {
-                self.header.unique                                                                                                                  
+                self.header.unique
             }
 
             #[inline]
@@ -208,10 +209,7 @@ impl<'a> SetAttr<'a> {
             _ => Some(if self.arg.atime_now() {
                 TimeOrNow::Now
             } else {
-                TimeOrNow::SpecificTime(system_time_from_time(
-                    self.arg.atime,
-                    self.arg.atimensec,
-                ))
+                TimeOrNow::SpecificTime(system_time_from_time(self.arg.atime, self.arg.atimensec))
             }),
         }
     }
@@ -221,10 +219,7 @@ impl<'a> SetAttr<'a> {
             _ => Some(if self.arg.mtime_now() {
                 TimeOrNow::Now
             } else {
-                TimeOrNow::SpecificTime(system_time_from_time(
-                    self.arg.mtime,
-                    self.arg.mtimensec,
-                ))
+                TimeOrNow::SpecificTime(system_time_from_time(self.arg.mtime, self.arg.mtimensec))
             }),
         }
     }
@@ -251,9 +246,7 @@ impl<'a> SetAttr<'a> {
         #[cfg(target_os = "macos")]
         match self.arg.valid & FATTR_CRTIME {
             0 => None,
-            _ => Some(
-                SystemTime::UNIX_EPOCH + Duration::new(self.arg.crtime, self.arg.crtimensec),
-            ),
+            _ => Some(SystemTime::UNIX_EPOCH + Duration::new(self.arg.crtime, self.arg.crtimensec)),
         }
         #[cfg(not(target_os = "macos"))]
         None
@@ -262,9 +255,9 @@ impl<'a> SetAttr<'a> {
         #[cfg(target_os = "macos")]
         match self.arg.valid & FATTR_CHGTIME {
             0 => None,
-            _ => Some(
-                SystemTime::UNIX_EPOCH + Duration::new(self.arg.chgtime, self.arg.chgtimensec),
-            ),
+            _ => {
+                Some(SystemTime::UNIX_EPOCH + Duration::new(self.arg.chgtime, self.arg.chgtimensec))
+            }
         }
         #[cfg(not(target_os = "macos"))]
         None
@@ -274,8 +267,7 @@ impl<'a> SetAttr<'a> {
         match self.arg.valid & FATTR_BKUPTIME {
             0 => None,
             _ => Some(
-                SystemTime::UNIX_EPOCH
-                    + Duration::new(self.arg.bkuptime, self.arg.bkuptimensec),
+                SystemTime::UNIX_EPOCH + Duration::new(self.arg.bkuptime, self.arg.bkuptimensec),
             ),
         }
         #[cfg(not(target_os = "macos"))]
