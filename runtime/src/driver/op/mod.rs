@@ -10,6 +10,7 @@ use crate::ready;
 
 pub(crate) mod close;
 pub(crate) mod open;
+pub(crate) mod write;
 
 /// In-flight operation
 pub(crate) struct Op<T: 'static> {
