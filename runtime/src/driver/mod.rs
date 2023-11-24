@@ -9,7 +9,9 @@ use std::{
     time::Duration,
 };
 
-mod op;
+pub(crate) mod file;
+pub(crate) mod op;
+pub(crate) mod shared_fd;
 pub(crate) mod uring;
 mod util;
 
