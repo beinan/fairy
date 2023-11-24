@@ -8,6 +8,9 @@ use std::{
 
 use crate::ready;
 
+pub(crate) mod close;
+pub(crate) mod open;
+
 /// In-flight operation
 pub(crate) struct Op<T: 'static> {
     // Driver running the operation
