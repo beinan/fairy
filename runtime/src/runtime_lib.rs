@@ -2,6 +2,7 @@
 #![feature(lazy_cell)]
 #![feature(thread_local)]
 
+pub mod buf;
 pub mod builder;
 mod driver;
 mod macros;
