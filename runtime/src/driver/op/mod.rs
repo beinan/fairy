@@ -10,6 +10,7 @@ use crate::ready;
 
 pub(crate) mod close;
 pub(crate) mod open;
+pub(crate) mod read;
 pub(crate) mod write;
 
 /// In-flight operation
