@@ -180,16 +180,21 @@ impl Driver for IoUringDriver {
 
 impl UringInner {
     fn tick(&mut self) {
+        // Get the completion queue from the `uring` interface
         let cq = self.uring.completion();
 
+        // Iterate over all completion queue events
         for cqe in cq {
+            // Extract the user_data from the completion queue event
             let index = cqe.user_data();
-            match index {
-                #[cfg(feature = "sync")]
-                EVENTFD_USERDATA => self.eventfd_installed = false,
-                _ if index >= MIN_REVERSED_USERDATA => (),
-                _ => self.ops.complete(index as _, resultify(&cqe), cqe.flags()),
+
+            // Check if index is in the range that requires handling
+            if index < MIN_REVERSED_USERDATA {
+                // Process the event with the `complete` method
+                self.ops
+                    .complete(index as usize, resultify(&cqe), cqe.flags());
             }
+            // If the index is greater or equal, the event is ignored
         }
     }
 
@@ -326,19 +331,6 @@ impl Drop for IoUringDriver {
 
         // Dealloc leaked memory
         unsafe { std::ptr::drop_in_place(self.timespec) };
-
-        #[cfg(feature = "sync")]
-        unsafe {
-            std::ptr::drop_in_place(self.eventfd_read_dst)
-        };
-
-        // Deregister thread id
-        #[cfg(feature = "sync")]
-        {
-            use crate::driver::thread::{unregister_unpark_handle, unregister_waker_sender};
-            unregister_unpark_handle(self.thread_id);
-            unregister_waker_sender(self.thread_id);
-        }
     }
 }
 

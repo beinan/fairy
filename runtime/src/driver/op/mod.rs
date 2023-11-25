@@ -78,25 +78,7 @@ impl<T> Op<T> {
     where
         T: OpAble,
     {
-        #[cfg(feature = "legacy")]
-        if is_legacy() {
-            return if let Some((dir, id)) = self.data.as_ref().unwrap().legacy_interest() {
-                OpCanceller {
-                    index: id,
-                    direction: Some(dir),
-                }
-            } else {
-                OpCanceller {
-                    index: 0,
-                    direction: None,
-                }
-            };
-        }
-        OpCanceller {
-            index: self.index,
-            #[cfg(feature = "legacy")]
-            direction: None,
-        }
+        OpCanceller { index: self.index }
     }
 }
 
