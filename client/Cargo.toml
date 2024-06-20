@@ -22,6 +22,6 @@ http = { workspace = true }
 
 clap = { version = "4.3.11", features = ["derive"]}
 
-aws-config = { version = "0.55.3" }
-aws-sdk-s3 = { version = "0.28.0"}
-
+aws-config = { version = "1.5.2" }
+aws-sdk-s3 = { version = "1.37.0"}
+time = { version = "0.3.36" }
