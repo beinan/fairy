@@ -1,15 +1,8 @@
-# Fairy: A Distributed Cache in Rust
+# Fairy: A Distributed Dataset in Rust
 
 [![Build Status](https://travis-ci.com/beinan/fairy.svg?branch=master)](https://travis-ci.com/beinan/fairy)
 
-Fairy is a distributed cache implemented in Rust. It uses consistent hashing and a combination of memory and ssd to store and manage key-value pairs across multiple nodes in a network.
-
-## Features
-
-- Distributed caching with consistent hashing
-- Lock-free eviction policy
-- Supports adding and removing nodes dynamically
-- Fault-tolerant with automatic failover
+Fairy is a distributed dataset implemented in Rust. 
 
 ## Getting Started
 
