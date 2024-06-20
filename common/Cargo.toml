@@ -23,8 +23,8 @@ lazy_static = { workspace = true }
 h2 = { workspace = true }
 http = { workspace = true }
 anyhow = { workspace = true }
-config = "0.13.1"
-hostname = "0.3"
+config = "0.14.0"
+hostname = "0.4.0"
 local-ip-address = "0.5.3"
 serde = { version = "1.0.140", features = ["derive"] }
 serde_derive = "1.0.140"
