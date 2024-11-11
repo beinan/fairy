@@ -6,9 +6,6 @@
 use std::{convert::TryFrom, fmt::Display, path::Path};
 use std::{error, fmt, mem};
 
-#[cfg(feature = "serializable")]
-use serde::{Deserialize, Serialize};
-
 use op::*;
 
 use crate::fuser::ll::Response;

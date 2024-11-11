@@ -18,8 +18,6 @@ use std::{convert::AsRef, io::ErrorKind};
 
 use libc::{c_int, ENOSYS, EPERM};
 use log::{debug, warn};
-#[cfg(feature = "serializable")]
-use serde::{Deserialize, Serialize};
 
 use ll::fuse_abi::consts::*;
 #[cfg(feature = "abi-7-16")]
@@ -79,7 +77,6 @@ const fn default_init_flags(#[allow(unused_variables)] capabilities: u32) -> u32
 
 /// File types
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-#[cfg_attr(feature = "serializable", derive(Serialize, Deserialize))]
 pub enum FileType {
     /// Named pipe (S_IFIFO)
     NamedPipe,
@@ -99,7 +96,6 @@ pub enum FileType {
 
 /// File attributes
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-#[cfg_attr(feature = "serializable", derive(Serialize, Deserialize))]
 pub struct FileAttr {
     /// Inode number
     pub ino: u64,
