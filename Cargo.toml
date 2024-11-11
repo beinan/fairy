@@ -10,22 +10,20 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
-log = "0.4"
-fern = { version = "0.6", features = ["colored"] }
+log = "0.4.22"
+fern = { version = "0.7.0", features = ["colored"] }
 humantime = "2.1.0"
-anyhow = "1"
-thiserror = "1.0.50"
-tokio = { version = "1.28.1", features = ["full"] }
+anyhow = "1.0.93"
+thiserror = "2.0.3"
+tokio = { version = "1.41.1", features = ["full"] }
 
-lazy_static = "1.4"
+lazy_static = "1.5.0"
+ahash = "0.8.11"
 
+monoio = "0.2.4"
+monoio-compat = "0.2.2"
 
-monoio = "0.1.6"
-monoio-compat = "0.1.1"
+bytes = {version = "1.8.0"}
 
-bytes = {version = "1"}
-
-h2 = {version = "0.3"}
-http = {version = "0.2"}
-
-
+h2 = {version = "0.4.6"}
+http = {version = "1.1.0"}
